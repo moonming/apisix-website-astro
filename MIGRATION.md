@@ -7,7 +7,6 @@ The current site is four independent Docusaurus 2.0-beta SPAs (website, doc, blo
 1. **Recurring 404s.** Each workspace ships its own client-side route manifest. After every deploy, browsers holding a stale manifest resolve cross-workspace navigations to the SPA 404 route. PR #2064 patched one symptom (guarded reload in a swizzled NotFound); the architecture guarantees the class of bug.
 2. **Payload.** The homepage ships ~350 KB of HTML plus ~120 KB gz of framework JS (React runtime + hydration) and 36 KB gz CSS — for a content page with no interactive state. Every docs/blog page pays a similar JS tax.
 3. **Frozen toolchain.** Node 16 (EOL), Docusaurus 2.0.0-beta.6/beta.8 with patch-package patches, four `node_modules` trees, tens-of-minutes CI builds with four cache layers.
-4. **SEO fragility.** Head tags are assembled by React at build time through i18n indirection; the live homepage `<title>` is literally "Supported" today because a `<Translate>` string leaked into it. Static templates make this class of bug impossible to miss in review.
 
 The site is *already* served as static files from the `asf-site` branch by ASF httpd. Only the generator — and what it makes browsers download — needs to change.
 
