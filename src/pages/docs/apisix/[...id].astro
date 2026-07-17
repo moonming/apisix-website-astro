@@ -1,0 +1,27 @@
+---
+import DocPage from '../../../layouts/DocPage.astro';
+import { getApisixDocs, getApisixSidebar, APISIX_DOCS_VERSION } from '../../../lib/content';
+
+export function getStaticPaths() {
+  const docs = getApisixDocs('en');
+  const titleById = new Map(docs.map((d) => [d.id, d.title]));
+  return docs.map((entry) => ({
+    params: { id: entry.id },
+    props: { entry, titleById },
+  }));
+}
+const { entry, titleById } = Astro.props;
+const sidebar = getApisixSidebar();
+const urlById = (id: string) => `/docs/apisix/${id}/`;
+const editUrl = `https://github.com/apache/apisix/edit/master/docs/en/latest/${entry.id}.md`;
+---
+<DocPage
+  entry={entry}
+  locale="en"
+  path={`/docs/apisix/${entry.id}/`}
+  sidebar={sidebar}
+  titleById={titleById}
+  urlById={urlById}
+  editUrl={editUrl}
+  versionLabel={`APISIX ${APISIX_DOCS_VERSION}`}
+/>

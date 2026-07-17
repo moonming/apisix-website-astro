@@ -1,0 +1,28 @@
+---
+import DocPage from '../../../layouts/DocPage.astro';
+import { SUBPROJECTS, getSubprojectDocs, getSubprojectSidebar } from '../../../lib/content';
+
+export function getStaticPaths() {
+  return Object.keys(SUBPROJECTS).flatMap((project) => {
+    const docs = getSubprojectDocs(project, 'en');
+    const titleById = new Map(docs.map((d) => [d.id, d.title]));
+    return docs.map((entry) => ({
+      params: { project, id: entry.id },
+      props: { entry, titleById, project },
+    }));
+  });
+}
+const { entry, titleById, project } = Astro.props;
+const sidebar = getSubprojectSidebar(project);
+const urlById = (id: string) => `/docs/${project}/${id}/`;
+const repo = SUBPROJECTS[project].repo;
+---
+<DocPage
+  entry={entry}
+  locale="en"
+  path={`/docs/${project}/${entry.id}/`}
+  sidebar={sidebar}
+  titleById={titleById}
+  urlById={urlById}
+  editUrl={`https://github.com/apache/${repo}/edit/master/docs/en/latest/${entry.id}.md`}
+/>

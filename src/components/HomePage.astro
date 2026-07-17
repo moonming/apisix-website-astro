@@ -1,0 +1,124 @@
+---
+import Base from '../layouts/Base.astro';
+import { t, localePrefix, type Locale } from '../lib/site';
+
+interface Props { locale: Locale }
+const { locale } = Astro.props;
+const p = localePrefix(locale);
+
+const features = [
+  {
+    title: t(locale, 'Ultimate performance', '极致性能'),
+    body: t(locale,
+      'Built on NGINX and LuaJIT with a radix-tree router: sub-millisecond routing latency and industry-leading QPS on a single core.',
+      '基于 NGINX 与 LuaJIT，radix-tree 路由：亚毫秒级路由延迟，单核 QPS 业界领先。'),
+  },
+  {
+    title: t(locale, 'Fully dynamic', '全动态'),
+    body: t(locale,
+      'Routes, upstreams, SSL certificates, and plugins hot-reload via etcd watch — no restarts, no dropped connections.',
+      '路由、上游、证书、插件全部通过 etcd watch 热更新——无需重启、不断连接。'),
+  },
+  {
+    title: t(locale, 'AI Gateway', 'AI 网关'),
+    body: t(locale,
+      'Proxy OpenAI-compatible LLM traffic with load balancing, retries, fallbacks, token-based rate limiting, and content moderation.',
+      '代理 OpenAI 兼容的 LLM 流量：负载均衡、重试、fallback、基于 token 的限流与内容审核。'),
+  },
+  {
+    title: t(locale, 'Shield against the malicious', '安全防护'),
+    body: t(locale,
+      'Authentication (key, JWT, OIDC, mTLS), WAF integrations, IP/UA restriction, and fine-grained traffic control out of the box.',
+      '开箱即用的认证（key、JWT、OIDC、mTLS）、WAF 集成、IP/UA 限制与细粒度流量控制。'),
+  },
+  {
+    title: t(locale, 'Integrates with your stack', '生态集成'),
+    body: t(locale,
+      '100+ plugins: Prometheus, OpenTelemetry, SkyWalking, Kafka, Consul, Nacos, Kubernetes service discovery, and more.',
+      '100+ 插件：Prometheus、OpenTelemetry、SkyWalking、Kafka、Consul、Nacos、Kubernetes 服务发现等。'),
+  },
+  {
+    title: t(locale, 'Create once, run anywhere', '随处运行'),
+    body: t(locale,
+      'Bare metal, Docker, Kubernetes (Ingress Controller & Gateway API), ARM64 — the same gateway everywhere.',
+      '裸金属、Docker、Kubernetes（Ingress Controller 与 Gateway API）、ARM64——同一个网关，随处运行。'),
+  },
+];
+---
+<Base
+  title={t(locale, 'Apache APISIX® — The open-source API Gateway & AI Gateway', 'Apache APISIX® — 开源 API 网关与 AI 网关')}
+  description={t(locale,
+    'Apache APISIX is a dynamic, high-performance, open-source API gateway and AI gateway. Features include load balancing, authentication, rate limiting, AI proxying, LLM load balancing, and 100+ plugins.',
+    'Apache APISIX 是一个动态、高性能的开源 API 网关和 AI 网关，提供负载均衡、身份认证、限流限速、AI 代理、LLM 负载均衡等能力和 100+ 插件。')}
+  locale={locale}
+  path="/"
+>
+  <section class="hero">
+    <div class="container">
+      <h1>{t(locale, 'The open-source API Gateway & AI Gateway', '开源 API 网关与 AI 网关')}</h1>
+      <p class="lead">
+        {t(locale,
+          'Apache APISIX is a dynamic, real-time, high-performance cloud-native API gateway — and the same gateway now handles your LLM traffic with AI proxying, load balancing, and token-aware rate limiting.',
+          'Apache APISIX 是一个动态、实时、高性能的云原生 API 网关——同一个网关现在也能处理你的 LLM 流量：AI 代理、负载均衡与 token 级限流。')}
+      </p>
+      <div class="btn-row">
+        <a class="btn" href={`${p}/docs/apisix/getting-started/README/`}>{t(locale, 'Get Started', '快速开始')}</a>
+        <a class="btn ghost" href="https://github.com/apache/apisix">GitHub →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>{t(locale, 'Why APISIX?', '为什么选择 APISIX？')}</h2>
+      <p class="sub">
+        {t(locale,
+          'A battle-tested gateway serving hundreds of millions of requests per day at companies like NASA, WPS, iQIYI, and China Mobile Cloud.',
+          '经过生产验证的网关，在 NASA、WPS、爱奇艺、移动云等企业每天处理数亿请求。')}
+      </p>
+      <div class="grid-3">
+        {features.map((f) => (
+          <div class="card">
+            <h3>{f.title}</h3>
+            <p>{f.body}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section alt">
+    <div class="container">
+      <h2>{t(locale, 'The same gateway, now for your LLM traffic', '同一个网关，现在服务你的 LLM 流量')}</h2>
+      <p class="sub">
+        {t(locale,
+          'ai-proxy, ai-proxy-multi, ai-rate-limiting, ai-prompt-guard and more — route, secure, and observe traffic to OpenAI, DeepSeek, or any OpenAI-compatible provider.',
+          'ai-proxy、ai-proxy-multi、ai-rate-limiting、ai-prompt-guard 等插件——路由、保护并观测发往 OpenAI、DeepSeek 或任何 OpenAI 兼容服务的流量。')}
+      </p>
+      <div class="btn-row">
+        <a class="btn" href={`${p}/ai-gateway/`}>{t(locale, 'Explore AI Gateway', '了解 AI 网关')}</a>
+        <a class="btn ghost" href={`${p}/docs/apisix/plugins/ai-proxy/`}>{t(locale, 'ai-proxy docs', 'ai-proxy 文档')}</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>{t(locale, 'Learn more', '了解更多')}</h2>
+      <div class="grid-3">
+        <a class="card" href={`${p}/learning-center/`}>
+          <h3>{t(locale, 'Learning Center', '学习中心')}</h3>
+          <p>{t(locale, 'Guides on API gateway concepts, security, and comparisons.', 'API 网关概念、安全与选型对比指南。')}</p>
+        </a>
+        <a class="card" href={`${p}/blog/`}>
+          <h3>{t(locale, 'Blog', '博客')}</h3>
+          <p>{t(locale, 'Release notes, case studies, and engineering deep dives.', '版本发布、用户案例与工程实践。')}</p>
+        </a>
+        <a class="card" href={`${p}/plugins/`}>
+          <h3>{t(locale, 'Plugin Hub', '插件中心')}</h3>
+          <p>{t(locale, '100+ plugins for auth, traffic, observability, and AI.', '认证、流量、可观测与 AI 领域的 100+ 插件。')}</p>
+        </a>
+      </div>
+    </div>
+  </section>
+</Base>
