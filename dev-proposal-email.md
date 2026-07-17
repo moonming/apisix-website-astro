@@ -82,8 +82,10 @@ design, and search integration.
    re-indexing event — crawlers see the same pages, just far lighter.
 5. Remove the four Docusaurus workspaces once stable.
 
-I can share the prototype branch with the full measurement methodology if
-there's interest. Framework choice is of course open to discussion — the
+Prototype, measurement methodology, and this proposal in doc form:
+https://github.com/moonming/apisix-website-astro
+
+Framework choice is of course open to discussion — the
 essential properties are "static HTML out, zero client JS, byte-identical
 URLs"; Astro is simply the mainstream option that delivers them with the
 least custom code (Hugo would be the no-Node alternative, with a weaker
