@@ -1,0 +1,101 @@
+# Draft replacement for apache/apisix-website .github/workflows/deploy.yml
+# during the wave-by-wave migration. NOT an active workflow in this repo —
+# it lives outside .github/workflows/ on purpose.
+#
+# Idea: run BOTH generators, then assemble the deploy tree from a prefix
+# allowlist. Each wave = extend MIGRATED_PREFIXES by one line. Rollback =
+# remove the line. When the list covers everything, delete the legacy job.
+
+name: Build and Deploy Website (wave migration)
+
+on:
+  push:
+    branches: [master]
+  schedule:
+    - cron: '0 5 * * *'
+  workflow_dispatch:
+
+env:
+  # ---- the wave dial ----------------------------------------------------
+  # Wave 1: learning-center articles events
+  # Wave 2: + blog zh/blog
+  # Wave 3: + docs zh/docs
+  # Wave 4: + . ai-gateway plugins downloads team contribute comparisons zh
+  MIGRATED_PREFIXES: |
+    learning-center
+    zh/learning-center
+    articles
+    zh/articles
+    events
+    zh/events
+
+jobs:
+  legacy-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '16' }
+      # …existing yarn install / prepare-data / yarn build steps unchanged…
+      - run: yarn install && yarn prepare-data && yarn build
+      - uses: actions/upload-artifact@v4
+        with: { name: legacy-dist, path: website/build }
+
+  astro-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: '22' }
+      - working-directory: next            # the Astro site lives in next/
+        run: |
+          npm ci
+          node scripts/sync-content.mjs    # replaces sync-docs.js
+          npm run build                    # astro build + sitemap generation
+      - uses: actions/upload-artifact@v4
+        with: { name: astro-dist, path: next/dist }
+
+  assemble-and-deploy:
+    runs-on: ubuntu-latest
+    needs: [legacy-build, astro-build]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with: { name: legacy-dist, path: legacy }
+      - uses: actions/download-artifact@v4
+        with: { name: astro-dist, path: astro }
+
+      - name: Assemble deploy tree from prefix allowlist
+        run: |
+          set -euo pipefail
+          cp -R legacy final
+          while IFS= read -r prefix; do
+            [ -z "$prefix" ] && continue
+            rm -rf "final/$prefix"
+            mkdir -p "final/$(dirname "$prefix")"
+            cp -R "astro/$prefix" "final/$prefix"
+          done <<< "$MIGRATED_PREFIXES"
+
+      - name: Regenerate sitemaps over the merged tree
+        # Walk final/ so EN + ZH sitemaps always describe exactly what ships,
+        # regardless of which generator produced each subtree.
+        run: node next/scripts/generate-sitemaps.mjs --dist final
+
+      - name: Parity gate (URI contract)
+        # Live sitemap URLs must all exist in the assembled tree, exact and
+        # case-sensitive. A missing URL fails the deploy.
+        run: |
+          curl -sf https://apisix.apache.org/sitemap.xml   -o /tmp/en.xml
+          curl -sf https://apisix.apache.org/zh/sitemap.xml -o /tmp/zh.xml
+          node next/scripts/check-parity.mjs --dist final /tmp/en.xml /tmp/zh.xml
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3.9.0
+        if: github.event_name == 'push' || github.event_name == 'schedule'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: final
+          publish_branch: asf-site
+          # Unlike today's force_orphan, keep history during the migration so
+          # any wave can be reverted with `git revert` on asf-site.
+          force_orphan: false

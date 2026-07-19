@@ -46,11 +46,44 @@ Mechanical, not architectural, work for the real migration:
 3. **Search.** Recommend keeping Algolia DocSearch as an additive script (crawler-based, no build coupling), or Pagefind for a fully self-hosted option.
 4. **Team/downloads data generators** (`generate-repos-info` GitHub API calls) — build-time JSON, framework-agnostic, ports as-is.
 
-## Rollout plan
+## Rollout plan: subtree waves, not a big-bang flip
 
-1. Discuss on dev@apisix.apache.org with this prototype + numbers (Apache Way: consensus first).
-2. Land the Astro build in a `next/` directory of apache/apisix-website behind the existing CI, publishing to the `asf-staging` profile (`preview/*` autostage already configured in `.asf.yaml`) for community review.
-3. Diff crawl: run the parity checker plus an HTML-level diff of title/canonical/hreflang/JSON-LD for every URL against production.
-4. Flip the deploy step's `publish_dir`. `asf-site` history provides instant rollback (`force_orphan: true` today — consider keeping one prior snapshot).
-5. Monitor GSC coverage + CWV for two weeks. Because URLs, sitemaps, and head tags are byte-compatible, there is no re-indexing event — Google sees the same pages, just 40× lighter.
-6. Delete the four Docusaurus workspaces once stable.
+**Why not traffic-percentage canarying:** apisix.apache.org is served by ASF
+httpd straight from the `asf-site` branch. There is no load balancer, edge, or
+reverse proxy under project control (and ASF policy precludes fronting the
+domain with third-party infrastructure), so a "5% of requests" split has
+nowhere to live. Client-side random redirects would trade SEO stability for a
+worse signal.
+
+**The natural canary unit is a URL subtree.** Both generators emit plain
+directory trees, and today's `asf-site` is *already* four independent builds
+stitched together by path. Migrating prefix-by-prefix just moves the stitch
+line. CI runs both toolchains and assembles the final tree from a prefix
+allowlist (see [`ci/deploy-example.yml`](ci/deploy-example.yml)); each wave is
+one commit, and rollback = removing the prefix from the allowlist.
+
+| Wave | Scope | Rationale |
+|---|---|---|
+| 0 | Full new site → `asf-staging` (`apisix.staged.apache.org`; `preview/*` autostage is already in `.asf.yaml`) | Community reviews real URLs without touching production; run link-checker + Lighthouse |
+| 1 | `/learning-center/` + `/articles/` + `/events/archive/` | Content lives in this repo, few URLs, small long-tail traffic — smallest blast radius |
+| 2 | `/blog/` (EN+ZH, ~650 URLs) | Most URLs but most mechanical; removes the largest chunk of build time |
+| 3 | `/docs/` (docs framework swap) | Version trees + `.htaccess` redirects are the most complex surface; do it with two waves of experience |
+| 4 | Homepage + marketing pages (`/`, `/ai-gateway/`, …) | Most visible, least SEO long-tail risk; ship after visual polish |
+
+**Per-wave gates and measurement.** Before each wave: the parity checker
+asserts the subtree's URL set matches the live sitemap exactly, plus an
+HTML-level diff of title/canonical/hreflang/JSON-LD against production. After
+each wave: watch that URL prefix as its own cohort in Google Search Console
+(index coverage, clicks/impressions) and CrUX (LCP/CLS) for ~two weeks — the
+not-yet-migrated subtrees are the control group. SEO risk settles per-URL, so
+a subtree cohort is a cleaner experiment than a request-percentage split.
+
+**Safety rails.** The Docusaurus build stays in CI (unused prefixes only)
+until the final wave has been stable for a month; only then delete the four
+workspaces. Known cosmetic caveat: during the transition old and new sections
+have slightly different header/footer chrome — no worse than today, where the
+four workspaces already ship separately-copied navbars.
+
+Because URLs, sitemaps, and head tags stay byte-compatible throughout, no
+wave triggers a re-indexing event — crawlers see the same pages, just ~40×
+lighter.

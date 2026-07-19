@@ -70,17 +70,34 @@ docs (3.10–3.17 x 2 locales — same pipeline, parameterized by the existing
 config/apisix-versions.js), a pixel-faithful port of the current visual
 design, and search integration.
 
-## Suggested rollout (if we agree to proceed)
+## Suggested rollout (if we agree to proceed): subtree waves
 
-1. Land the new build in the repo alongside the current one, publishing to
-   asf-staging via the existing preview/* autostage for community review.
-2. CI gate: the parity checker plus an HTML-level diff of
-   title/canonical/hreflang/JSON-LD for every URL against production.
-3. Flip the deploy step's publish_dir. asf-site gives us instant rollback.
-4. Monitor Search Console coverage and Core Web Vitals for two weeks.
-   Because URLs, sitemaps, and head tags stay byte-compatible, there is no
-   re-indexing event — crawlers see the same pages, just far lighter.
-5. Remove the four Docusaurus workspaces once stable.
+We cannot canary by traffic percentage — ASF httpd serves asf-site directly
+and there is no load balancer or edge under project control. But we don't
+need to: both generators emit plain directory trees, and today's asf-site is
+already four independent builds stitched together by path. So the canary unit
+is a URL subtree. CI runs both toolchains and assembles the deploy tree from
+a prefix allowlist; each wave is one commit, rollback is removing a prefix.
+
+  Wave 0: full new site on asf-staging (preview/* autostage already
+          configured) for community review; link-checker + Lighthouse.
+  Wave 1: /learning-center/ + /articles/ + /events/archive/ — smallest
+          blast radius, content lives in this repo.
+  Wave 2: /blog/ (EN+ZH, ~650 URLs) — most mechanical, biggest build-time win.
+  Wave 3: /docs/ — the docs framework swap; most complex surface
+          (version trees, .htaccess), done with two waves of experience.
+  Wave 4: homepage + marketing pages, after visual polish.
+
+Per-wave gates: the parity checker asserts the subtree's URL set matches the
+live sitemap exactly, plus an HTML diff of title/canonical/hreflang/JSON-LD
+against production. Per-wave measurement: each migrated prefix is its own
+cohort in Search Console (coverage, clicks) and CrUX (LCP/CLS) for ~two
+weeks, with the not-yet-migrated subtrees as the control group. SEO risk
+settles per-URL, so this is a cleaner experiment than a request split.
+
+The Docusaurus workspaces stay in CI until the final wave has been stable
+for a month; then we delete them. Because URLs, sitemaps, and head tags stay
+byte-compatible, no wave triggers a re-indexing event.
 
 Prototype, measurement methodology, and this proposal in doc form:
 https://github.com/moonming/apisix-website-astro
