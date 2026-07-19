@@ -39,11 +39,7 @@ const built = new Set();
   }
 })(dist);
 
-// Sections intentionally not in the prototype (identical pipeline, not yet
-// synced): sub-project docs. Report them separately instead of as failures.
-const DEFERRED = [/^\/(zh\/)?docs\/(ingress-controller|helm-chart|docker|java-plugin-runner|go-plugin-runner|python-plugin-runner)\//];
-
-let ok = 0; const missing = []; const deferred = [];
+let ok = 0; const missing = [];
 for (const file of [enList, zhList]) {
   if (!file) continue;
   for (const line of readUrls(file)) {
@@ -52,12 +48,11 @@ for (const file of [enList, zhList]) {
     const raw = line.replace(/&amp;/g, '&').replace(/&#39;/g, "'");
     const url = decodeURIComponent(new URL(raw).pathname);
     if (built.has(url)) { ok += 1; continue; }
-    if (DEFERRED.some((re) => re.test(url))) { deferred.push(url); continue; }
     missing.push(url);
   }
 }
 
-console.log(`parity: ${ok} present, ${missing.length} missing, ${deferred.length} deferred (sub-project docs)`);
+console.log(`parity: ${ok} present, ${missing.length} missing`);
 if (missing.length) {
   console.log('\nMISSING:');
   for (const u of missing) console.log('  ' + u);

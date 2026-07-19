@@ -5,20 +5,23 @@ import { SUBPROJECTS, getSubprojectDocs, getSubprojectSidebar } from '../../../.
 export function getStaticPaths() {
   return Object.keys(SUBPROJECTS).flatMap((project) => {
     const docs = getSubprojectDocs(project, 'zh');
-    const titleById = new Map(docs.map((d) => [d.id, d.title]));
+    // Sidebar config ids are path-derived; map them to post-override titles/urls.
+    const titleById = new Map(docs.map((d) => [d.pathId, d.title]));
+    const urlByPathId = new Map(docs.map((d) => [d.pathId, d.url]));
     return docs.map((entry) => ({
       params: { project, id: entry.id },
-      props: { entry, titleById, project },
+      props: { entry, titleById, urlByPathId, project },
     }));
   });
 }
-const { entry, titleById, project } = Astro.props;
+const { entry, titleById, urlByPathId, project } = Astro.props;
 const sidebar = getSubprojectSidebar(project);
-const urlById = (id: string) => `/zh/docs/${project}/${id}/`;
+const urlById = (id: string) => urlByPathId.get(id) ?? `/zh/docs/${project}/${id}/`;
 const repo = SUBPROJECTS[project].repo;
 ---
 <DocPage
   entry={entry}
+  activeId={entry.pathId}
   locale="zh"
   path={`/docs/${project}/${entry.id}/`}
   sidebar={sidebar}

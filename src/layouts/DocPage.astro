@@ -12,8 +12,11 @@ interface Props {
   urlById?: (id: string) => string;
   editUrl?: string;
   versionLabel?: string;
+  /** Sidebar id of the current page (path-derived); defaults to entry.id. */
+  activeId?: string;
 }
 const { entry, locale, path, sidebar = [], titleById, urlById, editUrl, versionLabel } = Astro.props;
+const active = Astro.props.activeId ?? entry.id;
 const { Content } = entry.mod;
 
 const jsonLd = [{
@@ -36,19 +39,19 @@ const renderable = (node: SidebarNode): boolean => !!node.id || !!(node.items &&
           {sidebar.filter(renderable).map((node) => (
             <li class={node.items ? 'cat' : ''}>
               {node.id
-                ? <a href={urlById!(node.id)} class={node.id === entry.id ? 'active' : ''}>{titleById?.get(node.id) ?? node.id}</a>
+                ? <a href={urlById!(node.id)} class={node.id === active ? 'active' : ''}>{titleById?.get(node.id) ?? node.id}</a>
                 : <span>{node.label}</span>}
               {node.items && (
                 <ul>
                   {node.items.filter(renderable).map((child) => (
                     <li>
                       {child.id
-                        ? <a href={urlById!(child.id)} class={child.id === entry.id ? 'active' : ''}>{titleById?.get(child.id) ?? child.id}</a>
+                        ? <a href={urlById!(child.id)} class={child.id === active ? 'active' : ''}>{titleById?.get(child.id) ?? child.id}</a>
                         : <span>{child.label}</span>}
                       {child.items && (
                         <ul>
                           {child.items.filter((n) => n.id).map((g) => (
-                            <li><a href={urlById!(g.id!)} class={g.id === entry.id ? 'active' : ''}>{titleById?.get(g.id!) ?? g.id}</a></li>
+                            <li><a href={urlById!(g.id!)} class={g.id === active ? 'active' : ''}>{titleById?.get(g.id!) ?? g.id}</a></li>
                           ))}
                         </ul>
                       )}

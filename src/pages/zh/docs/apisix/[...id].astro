@@ -4,19 +4,22 @@ import { getApisixDocs, getApisixSidebar, APISIX_DOCS_VERSION } from '../../../.
 
 export function getStaticPaths() {
   const docs = getApisixDocs('zh');
-  const titleById = new Map(docs.map((d) => [d.id, d.title]));
+  // Sidebar config ids are path-derived; map them to post-override titles/urls.
+  const titleById = new Map(docs.map((d) => [d.pathId, d.title]));
+  const urlByPathId = new Map(docs.map((d) => [d.pathId, d.url]));
   return docs.map((entry) => ({
     params: { id: entry.id },
-    props: { entry, titleById },
+    props: { entry, titleById, urlByPathId },
   }));
 }
-const { entry, titleById } = Astro.props;
+const { entry, titleById, urlByPathId } = Astro.props;
 const sidebar = getApisixSidebar();
-const urlById = (id: string) => `/zh/docs/apisix/${id}/`;
+const urlById = (id: string) => urlByPathId.get(id) ?? `/zh/docs/apisix/${id}/`;
 const editUrl = `https://github.com/apache/apisix/edit/master/docs/zh/latest/${entry.id}.md`;
 ---
 <DocPage
   entry={entry}
+  activeId={entry.pathId}
   locale="zh"
   path={`/docs/apisix/${entry.id}/`}
   sidebar={sidebar}

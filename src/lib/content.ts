@@ -151,7 +151,9 @@ export function groupByTag(posts: Post[]): Map<string, { label: string; posts: P
 /* ---------------- docs ---------------- */
 
 export interface DocEntry {
-  id: string; // path-derived id, case preserved (e.g. "FAQ", "plugins/limit-count")
+  id: string; // URL id after frontmatter slug/id overrides (e.g. "FAQ", "plugins/limit-count")
+  /** Pure path-derived id — the key sidebar config.json entries refer to. */
+  pathId: string;
   url: string;
   title: string;
   description: string;
@@ -182,6 +184,7 @@ export function getGeneralDocs(locale: Locale): DocEntry[] {
       const id = docId(p, 'docs-general', mod.frontmatter);
       return {
         id,
+        pathId: docId(p, 'docs-general'),
         url: `${localePrefix(locale)}/docs/general/${id}/`,
         title: docTitle(mod, id),
         description: mod.frontmatter.description ?? '',
@@ -198,6 +201,7 @@ export function getApisixDocs(locale: Locale): DocEntry[] {
     const effective = locale === 'zh' ? (zh.get(id) ?? mod) : mod;
     return {
       id,
+      pathId: docId(p, 'docs-apisix-en'),
       url: `${localePrefix(locale)}/docs/apisix/${id}/`,
       title: docTitle(effective, id),
       description: effective.frontmatter.description ?? '',
@@ -219,6 +223,7 @@ export function getSubprojectDocs(project: string, locale: Locale): DocEntry[] {
       const effective = locale === 'zh' ? (zhMap.get(id) ?? mod) : mod;
       return {
         id,
+        pathId: docId(p, `${rootName}en`),
         url: `${localePrefix(locale)}/docs/${project}/${id}/`,
         title: docTitle(effective, id),
         description: effective.frontmatter.description ?? '',
