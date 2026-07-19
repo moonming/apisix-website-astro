@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import remarkDirective from 'remark-directive';
 import { remarkAdmonitions } from './scripts/remark-admonitions.mjs';
+import { remarkHeadingIds } from './scripts/remark-heading-ids.mjs';
 
 // Static-only rebuild of apisix.apache.org.
 // URL contract: every public URL is identical to the current Docusaurus site
@@ -11,7 +12,7 @@ export default defineConfig({
   trailingSlash: 'always',
   build: { format: 'directory' },
   markdown: {
-    remarkPlugins: [remarkDirective, remarkAdmonitions],
+    remarkPlugins: [remarkDirective, remarkAdmonitions, remarkHeadingIds],
     shikiConfig: { theme: 'github-dark-default' },
   },
 });

@@ -21,7 +21,7 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const WEBSITE_REPO = path.join(root, '.sync/website');
 const OUT = path.join(root, 'content');
 
-const stats = { copied: 0, tabsFlattened: 0, importsStripped: 0 };
+const stats = { copied: 0, tabsFlattened: 0, importsStripped: 0, codeTitles: 0 };
 
 function walk(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -51,6 +51,13 @@ function transform(src, { docBase, ghProject, ghRef = 'master' } = {}) {
   out = flattenTabs(out);
   // Docusaurus admonition custom titles -> directive labels.
   out = out.replace(/^:::(\w+)[ \t]+(.+)$/gm, ':::$1[$2]');
+  // Docusaurus code-block titles (```yaml title="conf/config.yaml") -> a
+  // static caption div above the fence. Only top-level fences; indented ones
+  // (inside lists) keep their meta, which the highlighter ignores harmlessly.
+  out = out.replace(/^```(\w[\w-]*)[ \t]+title="([^"]+)"[ \t]*(.*)$/gm, (_m, lang, title, rest) => {
+    stats.codeTitles += 1;
+    return `<div class="code-title">${title}</div>\n\n\`\`\`${lang}${rest ? ` ${rest}` : ''}`;
+  });
   if (ghProject) {
     // ../assets/... and ../../docs/assets/... image refs -> raw GitHub (same
     // origin the current site ultimately serves many of these from).
