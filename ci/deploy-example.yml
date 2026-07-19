@@ -51,6 +51,7 @@ jobs:
         run: |
           npm ci
           node scripts/sync-content.mjs    # replaces sync-docs.js
+          node scripts/lint-content.mjs    # fail on unhandled Docusaurus-isms
           npm run build                    # astro build + sitemap generation
       - uses: actions/upload-artifact@v4
         with: { name: astro-dist, path: next/dist }

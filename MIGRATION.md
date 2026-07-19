@@ -70,9 +70,12 @@ one commit, and rollback = removing the prefix from the allowlist.
 | 3 | `/docs/` (docs framework swap) | Version trees + `.htaccess` redirects are the most complex surface; do it with two waves of experience |
 | 4 | Homepage + marketing pages (`/`, `/ai-gateway/`, …) | Most visible, least SEO long-tail risk; ship after visual polish |
 
-**Per-wave gates and measurement.** Before each wave: the parity checker
-asserts the subtree's URL set matches the live sitemap exactly, plus an
-HTML-level diff of title/canonical/hreflang/JSON-LD against production. After
+**Per-wave gates and measurement.** Before each wave: the content lint
+(`scripts/lint-content.mjs`) fails the build if upstream markdown starts using
+a Docusaurus feature the static pipeline doesn't handle (new components,
+mermaid, unknown admonitions, unrewritten links); the parity checker asserts
+the subtree's URL set matches the live sitemap exactly; plus an HTML-level
+diff of title/canonical/hreflang/JSON-LD against production. After
 each wave: watch that URL prefix as its own cohort in Google Search Console
 (index coverage, clicks/impressions) and CrUX (LCP/CLS) for ~two weeks — the
 not-yet-migrated subtrees are the control group. SEO risk settles per-URL, so

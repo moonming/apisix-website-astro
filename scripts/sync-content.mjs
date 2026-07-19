@@ -41,7 +41,7 @@ function flattenTabs(src) {
     .replace(/<\/TabItem>/g, '');
 }
 
-function transform(src, { docBase, ghProject, ghRef = 'master' } = {}) {
+function transform(src, { docBase, blogBase, ghProject, ghRef = 'master' } = {}) {
   let out = src;
   // MDX imports cannot exist in plain markdown.
   out = out.replace(/^import\s+.*(from\s+.*)?;?\s*$/gm, () => {
@@ -51,13 +51,18 @@ function transform(src, { docBase, ghProject, ghRef = 'master' } = {}) {
   out = flattenTabs(out);
   // Docusaurus admonition custom titles -> directive labels.
   out = out.replace(/^:::(\w+)[ \t]+(.+)$/gm, ':::$1[$2]');
-  // Docusaurus code-block titles (```yaml title="conf/config.yaml") -> a
-  // static caption div above the fence. Only top-level fences; indented ones
-  // (inside lists) keep their meta, which the highlighter ignores harmlessly.
-  out = out.replace(/^```(\w[\w-]*)[ \t]+title="([^"]+)"[ \t]*(.*)$/gm, (_m, lang, title, rest) => {
-    stats.codeTitles += 1;
-    return `<div class="code-title">${title}</div>\n\n\`\`\`${lang}${rest ? ` ${rest}` : ''}`;
-  });
+  // Docusaurus code-block titles -> a static caption div above the fence.
+  // Covers all observed meta spellings:
+  //   ```yaml title="x"   |   ``` yaml title="x"   |   ```shell {title="x"}
+  // Only top-level fences; indented ones (inside lists) keep their meta,
+  // which the highlighter ignores harmlessly.
+  out = out.replace(
+    /^```[ \t]*(\w[\w-]*)?[ \t]+(?:title="([^"]+)"|\{title="([^"]+)"\})[ \t]*(.*)$/gm,
+    (_m, lang, t1, t2, rest) => {
+      stats.codeTitles += 1;
+      return `<div class="code-title">${t1 ?? t2}</div>\n\n\`\`\`${lang ?? ''}${rest ? ` ${rest}` : ''}`;
+    },
+  );
   if (ghProject) {
     // ../assets/... and ../../docs/assets/... image refs -> raw GitHub (same
     // origin the current site ultimately serves many of these from).
@@ -70,6 +75,12 @@ function transform(src, { docBase, ghProject, ghRef = 'master' } = {}) {
       const clean = p.replace(/^\.\//, '');
       return `](${docBase}/${clean}/${hash || ''})`;
     });
+  }
+  if (blogBase) {
+    // Blog cross-references: Docusaurus resolves `./YYYY-MM-DD-name.md` by
+    // post id to /blog/YYYY/MM/DD/name/.
+    out = out.replace(/\]\((?:\.\/)?(\d{4})-(\d{2})-(\d{2})-([^)#\s]+?)\.md(#[^)]*)?\)/g,
+      (_m, y, mo, d, name, hash) => `](${blogBase}/${y}/${mo}/${d}/${name}/${hash || ''})`);
   }
   return out;
 }
@@ -89,8 +100,8 @@ fs.rmSync(OUT, { recursive: true, force: true });
 
 // Blog (both locales), learning center, articles, general docs — all already
 // live as markdown in the apisix-website repo.
-copyTree(path.join(WEBSITE_REPO, 'blog/en/blog'), path.join(OUT, 'blog-en'));
-copyTree(path.join(WEBSITE_REPO, 'blog/zh/blog'), path.join(OUT, 'blog-zh'));
+copyTree(path.join(WEBSITE_REPO, 'blog/en/blog'), path.join(OUT, 'blog-en'), { blogBase: '/blog' });
+copyTree(path.join(WEBSITE_REPO, 'blog/zh/blog'), path.join(OUT, 'blog-zh'), { blogBase: '/zh/blog' });
 copyTree(path.join(WEBSITE_REPO, 'website/learning-center'), path.join(OUT, 'learning-center'));
 copyTree(path.join(WEBSITE_REPO, 'website/articles'), path.join(OUT, 'articles'));
 copyTree(path.join(WEBSITE_REPO, 'website/docs/general'), path.join(OUT, 'docs-general'),
