@@ -9,7 +9,9 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
-const dist = path.join(root, 'dist');
+const args = process.argv.slice(2);
+const distFlag = args.indexOf('--dist');
+const dist = distFlag !== -1 ? path.resolve(args[distFlag + 1]) : path.join(root, 'dist');
 const SITE = 'https://apisix.apache.org';
 const today = new Date().toISOString().slice(0, 10);
 
