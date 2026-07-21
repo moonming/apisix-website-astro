@@ -189,10 +189,35 @@ a.tag:hover { border-color: var(--color-primary); color: var(--color-primary); t
 .chip { border: 1px solid var(--color-border); background: var(--color-surface); border-radius: 99px; padding: .25rem .8rem; font-size: .85rem; color: var(--color-text-soft); }
 .chip.strong { background: var(--color-primary); border-color: var(--color-primary); color: #fff; font-weight: 600; }
 .chip-row .arrow { color: var(--color-text-soft); }
+.chip-row.logos { gap: .6rem; }
+.chip.logo { display: inline-flex; align-items: center; gap: .45rem; text-decoration: none; transition: border-color 150ms ease, color 150ms ease, transform 150ms ease, box-shadow 150ms ease; }
+.chip.logo img { width: 20px; height: 20px; object-fit: contain; flex: none; }
+.chip.logo:hover { border-color: var(--color-primary); color: var(--color-text); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,.06); }
+.chip.logo:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
 .card-link { color: var(--color-primary); font-size: .88rem; margin-top: .6rem; }
 .cmp-table td.good { color: #067d47; font-weight: 600; }
 .cmp-table td.bad { color: var(--color-text-soft); }
 .endcta h2 { font-size: 2.2rem; }
+
+/* ---------- architecture + pillar infographics ---------- */
+.arch-visual { margin-top: 2rem; }
+.arch-visual img { width: 100%; max-width: 940px; height: auto; display: block; margin-inline: auto; }
+.pillar { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 4vw, 5rem); align-items: center; }
+.pillar.flip .pillar-text { order: 2; }
+.pillar-text h2 { margin: 0 0 1rem; }
+.pillar-visual img { width: 100%; height: auto; display: block; }
+@media (max-width: 820px) {
+  .pillar { grid-template-columns: 1fr; }
+  .pillar.flip .pillar-text { order: 0; }
+}
+.cmp-icon { display: inline-flex; }
+.cmp-icon svg { width: 22px; height: auto; display: block; }
+
+/* scroll-triggered reveal; falls back to fully visible where unsupported */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal { animation: reveal-up both linear; animation-timeline: view(); animation-range: entry 0% cover 30%; }
+  @keyframes reveal-up { from { opacity: 0; transform: translateY(28px); } to { opacity: 1; transform: none; } }
+}
 
 /* ---------- misc ---------- */
 .breadcrumbs { font-size: .82rem; color: var(--color-text-soft); margin-bottom: 1rem; }

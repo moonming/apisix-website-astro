@@ -2,6 +2,8 @@
 /** Full port of the production homepage: same sections, same copy, zero JS. */
 import Base from '../layouts/Base.astro';
 import { t, localePrefix, SOCIAL_IMAGE, type Locale } from '../lib/site';
+import tickSvg from '../assets/svg/tick.svg?raw';
+import crossSvg from '../assets/svg/cross.svg?raw';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
@@ -30,7 +32,34 @@ const AI_CARDS = [
   ['MCP support', 'Expose and govern Model Context Protocol tools through the gateway.'],
 ];
 
-const INTEGRATIONS = ['Prometheus', 'Grafana', 'Datadog', 'OpenTelemetry', 'Apache SkyWalking', 'Zipkin', 'Elasticsearch', 'ClickHouse', 'Google Cloud', 'Apache Kafka', 'gRPC', 'Kubernetes', 'Consul', 'NGINX', 'Redis', 'OpenID Connect', 'Keycloak', 'Casbin', 'HashiCorp Vault', 'OpenAI', 'Anthropic', 'AWS Bedrock', 'DeepSeek', 'Ollama'];
+// name, brand icon/logo under /img/integrations/ (null = text-only chip), and
+// the plugin/discovery doc it links to. Mirrors website/src/.../Integrations.tsx.
+const INTEGRATIONS: { name: string; img: string | null; href: string }[] = [
+  { name: 'Prometheus', img: '/img/integrations/icon-prometheus.svg', href: '/docs/apisix/plugins/prometheus/' },
+  { name: 'Grafana', img: '/img/integrations/grafana.svg', href: '/docs/apisix/plugins/prometheus/' },
+  { name: 'Datadog', img: '/img/integrations/icon-datadog.svg', href: '/docs/apisix/plugins/datadog/' },
+  { name: 'OpenTelemetry', img: '/img/integrations/opentelemetry.svg', href: '/docs/apisix/plugins/opentelemetry/' },
+  { name: 'Apache SkyWalking', img: '/img/integrations/icon-skywalking.svg', href: '/docs/apisix/plugins/skywalking/' },
+  { name: 'Zipkin', img: '/img/integrations/icon-zipkin.svg', href: '/docs/apisix/plugins/zipkin/' },
+  { name: 'Elasticsearch', img: '/img/integrations/elasticsearch.svg', href: '/docs/apisix/plugins/elasticsearch-logger/' },
+  { name: 'ClickHouse', img: '/img/integrations/clickhouse.svg', href: '/docs/apisix/plugins/clickhouse-logger/' },
+  { name: 'Google Cloud', img: '/img/integrations/icon-google-cloud-logging.svg', href: '/docs/apisix/plugins/google-cloud-logging/' },
+  { name: 'Apache Kafka', img: '/img/integrations/icon-kafka-logger.svg', href: '/docs/apisix/plugins/kafka-logger/' },
+  { name: 'gRPC', img: '/img/integrations/icon-grpc-transcode.svg', href: '/docs/apisix/plugins/grpc-transcode/' },
+  { name: 'Kubernetes', img: '/img/integrations/kubernetes.svg', href: '/docs/apisix/discovery/kubernetes/' },
+  { name: 'Consul', img: '/img/integrations/consul.svg', href: '/docs/apisix/discovery/consul/' },
+  { name: 'NGINX', img: '/img/integrations/nginx.svg', href: '/docs/apisix/architecture-design/apisix/' },
+  { name: 'Redis', img: '/img/integrations/redis.svg', href: '/docs/apisix/plugins/limit-count/' },
+  { name: 'OpenID Connect', img: '/img/integrations/icon-openid-connect.svg', href: '/docs/apisix/plugins/openid-connect/' },
+  { name: 'Keycloak', img: '/img/integrations/icon-authz-keycloak.svg', href: '/docs/apisix/plugins/authz-keycloak/' },
+  { name: 'Casbin', img: null, href: '/docs/apisix/plugins/authz-casbin/' },
+  { name: 'HashiCorp Vault', img: '/img/integrations/vault.svg', href: '/docs/apisix/terminology/secret/' },
+  { name: 'OpenAI', img: null, href: '/docs/apisix/plugins/ai-proxy/' },
+  { name: 'Anthropic', img: null, href: '/docs/apisix/plugins/ai-proxy/' },
+  { name: 'AWS Bedrock', img: null, href: '/docs/apisix/plugins/ai-proxy/' },
+  { name: 'DeepSeek', img: null, href: '/docs/apisix/plugins/ai-proxy/' },
+  { name: 'Ollama', img: null, href: '/docs/apisix/plugins/ai-proxy/' },
+];
 
 const PILLARS = [
   {
@@ -68,6 +97,16 @@ const PILLARS = [
       "Platform agnostic, no vendor lock-in. Apache APISIX as API Management solution, can run from bare-metal to Kubernetes. It supports HTTP to gRPC transcoding, websockets, gRPC, Dubbo, MQTT proxy and multiple platforms including ARM64, don't worry about the lock-in of the infra technology.",
       'Apache APISIX 提供了多平台解决方案，它不但支持在裸机运行，也支持在 Kubernetes 中使用。它支持 HTTP 到 gRPC 的转换、WebSockets、gRPC、Dubbo、MQTT 代理和包括 ARM64 在内的多个平台，无需担心供应商对基础设施技术的锁定。'),
   },
+];
+
+// Infographic per pillar, same order as PILLARS. Ported from Benefits.tsx (as
+// static art — the production GSAP timelines are replaced by CSS reveal).
+const PILLAR_IMGS = [
+  '/img/infographs/performance.svg',
+  '/img/infographs/security.svg',
+  '/img/infographs/scale.svg',
+  '/img/infographs/dynamic.svg',
+  '/img/infographs/multiplatform.svg',
 ];
 
 const CMP_ROWS: [string, string, string][] = [
@@ -135,6 +174,19 @@ const CMP_ROWS: [string, string, string][] = [
     </div>
   </section>
 
+  <section class="section arch">
+    <div class="container">
+      <p class="kicker">{t(locale, 'Architecture', '架构')}</p>
+      <h2>{t(locale, 'Dynamic by design, built on NGINX and etcd', '为动态而生，基于 NGINX 与 etcd')}</h2>
+      <p class="sub">{t(locale,
+        'Requests flow through a hot-reloadable plugin pipeline; etcd distributes configuration across the cluster in real time, with no restarts.',
+        '请求流经可热加载的插件流水线；etcd 将配置实时分发到整个集群，无需重启。')}</p>
+      <div class="arch-visual reveal">
+        <img src="/img/architecture.svg" alt={t(locale, 'Apache APISIX architecture diagram', 'Apache APISIX 架构图')} loading="lazy" width="1713" height="996" />
+      </div>
+    </div>
+  </section>
+
   <section class="section">
     <div class="container">
       <h2>{t(locale, 'Building for large-scale, high value systems', '适用于超大规模、复杂的业务系统')}</h2>
@@ -160,17 +212,27 @@ const CMP_ROWS: [string, string, string][] = [
       <p class="sub">{t(locale,
         'Connect APISIX to your observability, security, service discovery, and AI tools through 100+ plugins.',
         '通过 100+ 插件，将 APISIX 接入你的可观测、安全、服务发现与 AI 工具。')}</p>
-      <p class="chip-row">{INTEGRATIONS.map((n) => <span class="chip">{n}</span>)}</p>
+      <div class="chip-row logos">{INTEGRATIONS.map((it) => (
+        <a class="chip logo" href={it.href} title={it.name}>
+          {it.img && <img src={it.img} alt="" width="20" height="20" loading="lazy" />}
+          <span>{it.name}</span>
+        </a>
+      ))}</div>
       <p style="margin-top:1.25rem"><a href={`${p}/plugins/`}>{t(locale, 'Explore all 100+ plugins →', '浏览全部 100+ 插件 →')}</a></p>
     </div>
   </section>
 
   {PILLARS.map((s, i) => (
-    <section class={`section${i % 2 ? ' alt' : ''}`}>
-      <div class="container">
-        <p class="kicker">{s.kicker}</p>
-        <h2>{s.title}</h2>
-        <p class="sub">{s.body}</p>
+    <section class={`section pillar-section${i % 2 ? ' alt' : ''}`}>
+      <div class={`container pillar${i % 2 ? ' flip' : ''}`}>
+        <div class="pillar-text">
+          <p class="kicker">{s.kicker}</p>
+          <h2>{s.title}</h2>
+          <p class="sub">{s.body}</p>
+        </div>
+        <div class="pillar-visual reveal">
+          <img src={PILLAR_IMGS[i]} alt="" loading="lazy" />
+        </div>
       </div>
     </section>
   ))}
@@ -184,7 +246,13 @@ const CMP_ROWS: [string, string, string][] = [
       <div class="prose"><table class="cmp-table">
         <thead><tr><th>{t(locale, 'Feature', '特性')}</th><th>Apache APISIX</th><th>{t(locale, 'Other gateways', '其他网关')}</th></tr></thead>
         <tbody>
-          {CMP_ROWS.map(([f, a, b]) => <tr><td>{f}</td><td class="good">{a}</td><td class="bad">{b}</td></tr>)}
+          {CMP_ROWS.map(([f, a, b]) => (
+            <tr>
+              <td>{f}</td>
+              <td class="good">{a === '✓' ? <span class="cmp-icon tick" set:html={tickSvg} /> : a}</td>
+              <td class="bad">{b === '✗' ? <span class="cmp-icon cross" set:html={crossSvg} /> : b}</td>
+            </tr>
+          ))}
         </tbody>
       </table></div>
     </div>
