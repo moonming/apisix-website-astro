@@ -28,6 +28,19 @@ TMP="$(mktemp -d)"
 trap 'rm -rf "$TMP"' EXIT
 cp -R "$ROOT/dist/." "$TMP/"
 
+# ASF processes .asf.yaml from the branch being pushed (the production
+# asf-site branch carries its own copy for the same reason). Without this
+# file in the branch, the staging config on master is never consulted and
+# the push is silently ignored.
+cat > "$TMP/.asf.yaml" <<'YAML'
+# Staging config for this preview branch — see .asf.yaml on master and
+# https://github.com/apache/infrastructure-asfyaml (autostage section).
+staging:
+  profile: ~
+  whoami: asf-staging
+  autostage: preview/*
+YAML
+
 git -C "$TMP" init -q
 git -C "$TMP" checkout -q -b "$BRANCH"
 git -C "$TMP" add -A
