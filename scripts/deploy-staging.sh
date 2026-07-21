@@ -31,7 +31,11 @@ git -C "$TMP" -c user.email=wenming@apache.org -c user.name="Ming Wen" \
 Built from https://github.com/moonming/apisix-website-astro"
 
 # Force-push: the preview branch is a throwaway artifact, history is noise.
-git -C "$TMP" push --force "$REMOTE" "$BRANCH:$BRANCH"
+# HTTP/1.1 + big postBuffer: the ~3.5k-object site pack reliably trips curl's
+# "HTTP2 framing layer" bug on this machine's https transport (insteadOf
+# rewrites git@ URLs to https).
+git -C "$TMP" -c http.version=HTTP/1.1 -c http.postBuffer=157286400 \
+  push --force "$REMOTE" "$BRANCH:$BRANCH"
 
 echo
 echo "Pushed. ASF infra will stage it shortly (usually within a few minutes) at:"
