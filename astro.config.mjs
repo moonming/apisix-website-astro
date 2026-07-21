@@ -10,7 +10,9 @@ export default defineConfig({
   site: 'https://apisix.apache.org',
   output: 'static',
   trailingSlash: 'always',
-  build: { format: 'directory' },
+  // inlineStylesheets:'never' keeps CSS in /_astro/ even if it drops below
+  // Vite's inline threshold, so the deploy overlay's _astro/ dependency holds.
+  build: { format: 'directory', inlineStylesheets: 'never' },
   markdown: {
     remarkPlugins: [remarkDirective, remarkAdmonitions, remarkHeadingIds],
     shikiConfig: { theme: 'github-dark-default' },

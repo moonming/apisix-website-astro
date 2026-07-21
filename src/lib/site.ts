@@ -6,6 +6,8 @@ export const DEFAULT_DESCRIPTION = 'APISIX is a dynamic, high-performance API Ga
 // hotlinked from the live site during prototyping.
 export const LOGO = 'https://apisix.apache.org/img/logo2.svg';
 export const FAVICON = 'https://static.apiseven.com/202202/favicon.png';
+// Social-share card image (og:image / twitter:image) — matches production.
+export const SOCIAL_IMAGE = 'https://static.apiseven.com/202202/apache-apisix.png';
 export const POSTS_PER_PAGE = 9;
 
 export type Locale = 'en' | 'zh';

@@ -1,7 +1,7 @@
 ---
 /** Full port of the production homepage: same sections, same copy, zero JS. */
 import Base from '../layouts/Base.astro';
-import { t, localePrefix, type Locale } from '../lib/site';
+import { t, localePrefix, SOCIAL_IMAGE, type Locale } from '../lib/site';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
@@ -87,6 +87,7 @@ const CMP_ROWS: [string, string, string][] = [
     'Apache APISIX 是一个动态、高性能的开源 API 网关和 AI 网关，提供负载均衡、身份认证、限流限速、AI 代理、LLM 负载均衡等能力和 100+ 插件。')}
   locale={locale}
   path="/"
+  image={SOCIAL_IMAGE}
 >
   <section class="hero">
     <div class="container">
