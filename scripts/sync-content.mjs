@@ -21,7 +21,7 @@ const root = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
 const WEBSITE_REPO = path.join(root, '.sync/website');
 const OUT = path.join(root, 'content');
 
-const stats = { copied: 0, tabsFlattened: 0, importsStripped: 0, codeTitles: 0 };
+const stats = { copied: 0, tabsFlattened: 0, importsStripped: 0, codeTitles: 0, canonicals: 0 };
 
 function walk(dir) {
   if (!fs.existsSync(dir)) return [];
@@ -43,12 +43,27 @@ function flattenTabs(src) {
 
 function transform(src, { docBase, blogBase, ghProject, ghRef = 'master' } = {}) {
   let out = src;
+  let canonicalUrl = null;
   // MDX imports cannot exist in plain markdown.
   out = out.replace(/^import\s+.*(from\s+.*)?;?\s*$/gm, () => {
     stats.importsStripped += 1;
     return '';
   });
   out = flattenTabs(out);
+  // Upstream docs embed MDX <head> blocks carrying a cross-site canonical
+  // (e.g. plugin pages -> docs.api7.ai/hub/*). Docusaurus hoists them into
+  // the page head; we lift the URL into frontmatter for the layout to emit.
+  out = out.replace(
+    /\n<head>\s*\n\s*<link rel="canonical" href="([^"]+)"\s*\/?>\s*\n<\/head>\s*\n/,
+    (_m, url) => {
+      stats.canonicals += 1;
+      canonicalUrl = url;
+      return '\n';
+    },
+  );
+  if (canonicalUrl) {
+    out = out.replace(/^---\n/, `---\ncanonical: "${canonicalUrl}"\n`);
+  }
   // Docusaurus admonition custom titles -> directive labels.
   out = out.replace(/^:::(\w+)[ \t]+(.+)$/gm, ':::$1[$2]');
   // Docusaurus code-block titles -> a static caption div above the fence.

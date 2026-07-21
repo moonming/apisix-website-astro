@@ -5,6 +5,32 @@ export interface MdModule {
   file: string;
   Content: any;
   getHeadings: () => { depth: number; slug: string; text: string }[];
+  rawContent?: () => string;
+}
+
+/**
+ * Fallback meta description when frontmatter has none: the first real prose
+ * paragraph of the document (same behavior as the current Docusaurus site).
+ */
+export function excerpt(mod: MdModule): string {
+  const raw = mod.rawContent?.() ?? '';
+  const cleaned = raw
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/```[\s\S]*?```/g, '')
+    .replace(/^<head>[\s\S]*?<\/head>$/m, '');
+  for (const block of cleaned.split(/\n\s*\n/)) {
+    const t = block.trim();
+    // Skip headings, admonitions, tables, html, quotes, images, code, list
+    // items, and imports — but NOT prose that merely starts with a [link].
+    if (!t || /^(#|:{3}|\||<|>|!\[|`|\* |- |\d+\. |import )/.test(t)) continue;
+    const text = t
+      .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
+      .replace(/[*_`]/g, '')
+      .replace(/\s+/g, ' ')
+      .trim();
+    if (text.length >= 40) return text;
+  }
+  return '';
 }
 
 export interface Post {
@@ -75,7 +101,7 @@ function blogPost(path: string, mod: MdModule, locale: Locale): Post | null {
     url: `${localePrefix(locale)}/blog/${urlPath}/`,
     slug: urlPath,
     title: mod.frontmatter.title ?? name,
-    description: mod.frontmatter.description ?? '',
+    description: mod.frontmatter.description ?? excerpt(mod),
     date: new Date(`${y}-${mo}-${d}T00:00:00Z`),
     dateStr: `${y}-${mo}-${d}`,
     tags: toTags(mod.frontmatter),
@@ -92,7 +118,7 @@ function flatPost(path: string, mod: MdModule, urlBase: string, locale: Locale):
     url: `${localePrefix(locale)}${urlBase}/${slug}/`,
     slug,
     title: mod.frontmatter.title ?? slug,
-    description: mod.frontmatter.description ?? '',
+    description: mod.frontmatter.description ?? excerpt(mod),
     date,
     dateStr: date.toISOString().slice(0, 10),
     tags: toTags(mod.frontmatter),
@@ -187,7 +213,7 @@ export function getGeneralDocs(locale: Locale): DocEntry[] {
         pathId: docId(p, 'docs-general'),
         url: `${localePrefix(locale)}/docs/general/${id}/`,
         title: docTitle(mod, id),
-        description: mod.frontmatter.description ?? '',
+        description: mod.frontmatter.description ?? excerpt(mod),
         mod,
       };
     });
@@ -204,7 +230,7 @@ export function getApisixDocs(locale: Locale): DocEntry[] {
       pathId: docId(p, 'docs-apisix-en'),
       url: `${localePrefix(locale)}/docs/apisix/${id}/`,
       title: docTitle(effective, id),
-      description: effective.frontmatter.description ?? '',
+      description: effective.frontmatter.description ?? excerpt(effective),
       mod: effective,
     };
   });
@@ -226,7 +252,7 @@ export function getSubprojectDocs(project: string, locale: Locale): DocEntry[] {
         pathId: docId(p, `${rootName}en`),
         url: `${localePrefix(locale)}/docs/${project}/${id}/`,
         title: docTitle(effective, id),
-        description: effective.frontmatter.description ?? '',
+        description: effective.frontmatter.description ?? excerpt(effective),
         mod: effective,
       };
     });

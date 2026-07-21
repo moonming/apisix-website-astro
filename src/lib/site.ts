@@ -1,5 +1,6 @@
 export const SITE = 'https://apisix.apache.org';
-export const SITE_NAME = 'Apache APISIX®';
+// Title-tag suffix — matches production's "<page> | Apache APISIX" pattern.
+export const SITE_NAME = 'Apache APISIX';
 export const DEFAULT_DESCRIPTION = 'APISIX is a dynamic, high-performance API Gateway with features like load balancing, canary release, authentication, and observability. As an AI Gateway, it enables AI proxying, LLM load balancing, retries, fallbacks, token-based rate limiting, and security to enhance AI agent efficiency and reliability.';
 // Served from public/img/logo2.svg in production (same URL as today);
 // hotlinked from the live site during prototyping.

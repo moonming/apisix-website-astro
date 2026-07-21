@@ -30,7 +30,14 @@ const jsonLd = [{
 
 const renderable = (node: SidebarNode): boolean => !!node.id || !!(node.items && node.items.length);
 ---
-<Base title={entry.title} description={entry.description} locale={locale} path={path} jsonLd={jsonLd}>
+<Base
+  title={entry.title}
+  description={entry.description}
+  locale={locale}
+  path={path}
+  jsonLd={jsonLd}
+  canonicalOverride={entry.mod.frontmatter.canonical}
+>
   <div class="container docs-layout">
     {sidebar.length > 0 && (
       <nav class="docs-sidebar" aria-label="Docs sidebar">
