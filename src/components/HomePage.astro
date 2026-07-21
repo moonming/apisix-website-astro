@@ -102,11 +102,11 @@ const PILLARS = [
 // Infographic per pillar, same order as PILLARS. Ported from Benefits.tsx (as
 // static art — the production GSAP timelines are replaced by CSS reveal).
 const PILLAR_IMGS = [
-  '/img/infographs/performance.svg',
-  '/img/infographs/security.svg',
-  '/img/infographs/scale.svg',
-  '/img/infographs/dynamic.svg',
-  '/img/infographs/multiplatform.svg',
+  { src: '/img/infographs/performance.svg', w: 603, h: 746 },
+  { src: '/img/infographs/security.svg', w: 1783, h: 787 },
+  { src: '/img/infographs/scale.svg', w: 998, h: 779 },
+  { src: '/img/infographs/dynamic.svg', w: 1057, h: 640 },
+  { src: '/img/infographs/multiplatform.svg', w: 543, h: 244 },
 ];
 
 const CMP_ROWS: [string, string, string][] = [
@@ -213,7 +213,7 @@ const CMP_ROWS: [string, string, string][] = [
         'Connect APISIX to your observability, security, service discovery, and AI tools through 100+ plugins.',
         '通过 100+ 插件，将 APISIX 接入你的可观测、安全、服务发现与 AI 工具。')}</p>
       <div class="chip-row logos">{INTEGRATIONS.map((it) => (
-        <a class="chip logo" href={it.href} title={it.name}>
+        <a class="chip logo" href={`${p}${it.href}`} title={it.name}>
           {it.img && <img src={it.img} alt="" width="20" height="20" loading="lazy" />}
           <span>{it.name}</span>
         </a>
@@ -231,7 +231,7 @@ const CMP_ROWS: [string, string, string][] = [
           <p class="sub">{s.body}</p>
         </div>
         <div class="pillar-visual reveal">
-          <img src={PILLAR_IMGS[i]} alt="" loading="lazy" />
+          <img src={PILLAR_IMGS[i].src} alt="" loading="lazy" width={PILLAR_IMGS[i].w} height={PILLAR_IMGS[i].h} />
         </div>
       </div>
     </section>
@@ -249,8 +249,8 @@ const CMP_ROWS: [string, string, string][] = [
           {CMP_ROWS.map(([f, a, b]) => (
             <tr>
               <td>{f}</td>
-              <td class="good">{a === '✓' ? <span class="cmp-icon tick" set:html={tickSvg} /> : a}</td>
-              <td class="bad">{b === '✗' ? <span class="cmp-icon cross" set:html={crossSvg} /> : b}</td>
+              <td class="good">{a === '✓' ? <span class="cmp-icon tick" role="img" aria-label={t(locale, 'Supported', '支持')} set:html={tickSvg} /> : a}</td>
+              <td class="bad">{b === '✗' ? <span class="cmp-icon cross" role="img" aria-label={t(locale, 'Not supported', '不支持')} set:html={crossSvg} /> : b}</td>
             </tr>
           ))}
         </tbody>
