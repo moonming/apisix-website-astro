@@ -276,7 +276,12 @@ export interface SidebarNode {
   items?: SidebarNode[];
 }
 
-import apisixSidebarConfig from '../../content/docs-apisix-en/config.json';
+// Resolve the apisix sidebar config from the already-globbed config set rather
+// than a static import, so the homepage-only build (which ships no synced
+// content/) still compiles. Missing config -> empty sidebar, version 'current'.
+const apisixCfgEntry = Object.entries(sidebarConfigs)
+  .find(([p]) => p.includes('docs-apisix-en/config.json'))?.[1];
+const apisixCfg = ((apisixCfgEntry as any)?.default ?? apisixCfgEntry ?? {}) as any;
 
 export function getApisixSidebar(): SidebarNode[] {
   const normalize = (item: any): SidebarNode => {
@@ -284,7 +289,7 @@ export function getApisixSidebar(): SidebarNode[] {
     if (item.type === 'doc') return { id: item.id };
     return { label: item.label, items: (item.items ?? []).map(normalize) };
   };
-  return (apisixSidebarConfig as any).sidebar.map(normalize);
+  return (apisixCfg.sidebar ?? []).map(normalize);
 }
 
-export const APISIX_DOCS_VERSION: string = (apisixSidebarConfig as any).version ?? 'current';
+export const APISIX_DOCS_VERSION: string = apisixCfg.version ?? 'current';
