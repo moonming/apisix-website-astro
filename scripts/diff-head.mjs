@@ -61,10 +61,11 @@ for (const path of sample) {
   if (!th.title) problems.push('missing <title>');
   if (!th.description) problems.push('missing meta description');
   if (!th.canonical) problems.push('missing canonical');
-  else if (th.canonical !== bh.canonical) problems.push(`canonical ${th.canonical} != ${bh.canonical}`);
+  else if (bh.canonical && th.canonical !== bh.canonical) problems.push(`canonical ${th.canonical} != ${bh.canonical}`);
   if (th.robotsNoindex && !bh.robotsNoindex) problems.push('target noindex but base indexable');
   if (problems.length) { console.log(`FATAL ${path}: ${problems.join('; ')}`); fatal += 1; continue; }
   const notes = [];
+  if (!bh.canonical && th.canonical) notes.push('adds canonical missing in base (improvement)');
   if (th.title !== bh.title) notes.push('title differs');
   if (th.hreflangs !== bh.hreflangs) notes.push(`hreflang [${bh.hreflangs}] -> [${th.hreflangs}]`);
   if (th.jsonldTypes !== bh.jsonldTypes) notes.push(`jsonld [${bh.jsonldTypes}] -> [${th.jsonldTypes}]`);
