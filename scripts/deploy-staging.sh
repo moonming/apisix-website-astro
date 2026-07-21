@@ -14,7 +14,10 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 # multi-MB packs (curl 16/52). The URL form below dodges both AND the global
 # insteadOf rewrites (which only match git@github.com: / https://github.com/).
 REMOTE="${STAGING_REMOTE:-ssh://git@ssh.github.com:443/apache/apisix-website.git}"
-BRANCH="${STAGING_BRANCH:-preview/astro}"
+# ASF autostage contract (infrastructure-asfyaml README): `autostage: preview/*`
+# matches branches named preview/<x>-staging and stages them at
+# <project>-<x>.staged.apache.org — the "-staging" suffix is mandatory.
+BRANCH="${STAGING_BRANCH:-preview/astro-staging}"
 
 if [ ! -f "$ROOT/dist/index.html" ]; then
   echo "dist/ is missing or incomplete — run: npm run sync && npm run build" >&2
@@ -39,6 +42,9 @@ Built from https://github.com/moonming/apisix-website-astro"
 # rewrites git@ URLs to https).
 git -C "$TMP" -c http.version=HTTP/1.1 -c http.postBuffer=157286400 \
   push --force "$REMOTE" "$BRANCH:$BRANCH"
+
+# Remove the earlier misnamed branch if it is still around (harmless if not).
+git -C "$TMP" push "$REMOTE" ":preview/astro" 2>/dev/null || true
 
 echo
 echo "Pushed. ASF infra will stage it shortly (usually within a few minutes) at:"
