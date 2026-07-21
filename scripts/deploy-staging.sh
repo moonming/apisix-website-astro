@@ -10,7 +10,10 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-REMOTE="${STAGING_REMOTE:-git@github.com:apache/apisix-website.git}"
+# ssh over 443: this network blocks ssh:22, and the https transport drops
+# multi-MB packs (curl 16/52). The URL form below dodges both AND the global
+# insteadOf rewrites (which only match git@github.com: / https://github.com/).
+REMOTE="${STAGING_REMOTE:-ssh://git@ssh.github.com:443/apache/apisix-website.git}"
 BRANCH="${STAGING_BRANCH:-preview/astro}"
 
 if [ ! -f "$ROOT/dist/index.html" ]; then
