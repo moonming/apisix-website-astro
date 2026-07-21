@@ -99,6 +99,17 @@ The Docusaurus workspaces stay in CI until the final wave has been stable
 for a month; then we delete them. Because URLs, sitemaps, and head tags stay
 byte-compatible, no wave triggers a re-indexing event.
 
+You can browse the full rebuilt site on ASF staging right now (every URL
+from the production sitemaps, EN + ZH):
+
+  https://apisix-astro.staged.apache.org/
+
+It is deployed from the preview/astro-staging branch of this repo via the
+autostage mechanism already configured in our .asf.yaml. A head-tag diff of
+60 sampled URLs against production reports zero regressions on
+canonical/description/title/robots (the only intentional deltas: symmetric
+hreflang pairs and leaner JSON-LD).
+
 Prototype, measurement methodology, and this proposal in doc form:
 https://github.com/moonming/apisix-website-astro
 
