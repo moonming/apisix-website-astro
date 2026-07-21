@@ -5,7 +5,7 @@
  * pure static HTML.
  */
 import Base from '../layouts/Base.astro';
-import { t, localePrefix, type Locale } from '../lib/site';
+import { SITE, t, localePrefix, type Locale } from '../lib/site';
 import { getApisixDocs, getLearningPosts } from '../lib/content';
 
 interface Props { kind: 'docs-hub' | 'downloads' | 'team' | 'contribute' | 'comparisons' | 'ai-gateway' | 'plugins'; locale: Locale }
@@ -49,8 +49,13 @@ const META: Record<string, { title: string; desc: string; path: string }> = {
   plugins: { title: t(locale, 'Plugin Hub', '插件中心'), desc: t(locale, 'Explore 100+ Apache APISIX plugins for authentication, security, traffic, observability, serverless, and AI.', '探索 100+ APISIX 插件：认证、安全、流量、可观测、Serverless 与 AI。'), path: '/plugins/' },
 };
 const meta = META[kind];
+// Production canonicalizes the untranslated zh comparisons/ai-gateway pages
+// to their EN counterparts; every other zh page self-canonicalizes.
+const zhCanonicalToEn = locale === 'zh' && (kind === 'comparisons' || kind === 'ai-gateway')
+  ? `${SITE}${meta.path}`
+  : undefined;
 ---
-<Base title={meta.title} description={meta.desc} locale={locale} path={meta.path}>
+<Base title={meta.title} description={meta.desc} locale={locale} path={meta.path} canonicalOverride={zhCanonicalToEn}>
   <div class="container">
     <div class="page-title"><h1>{meta.title}</h1><p>{meta.desc}</p></div>
 

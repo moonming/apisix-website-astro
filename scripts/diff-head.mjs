@@ -43,7 +43,9 @@ function headOf(html) {
 
 const sitemapXml = await (await fetch(`${BASE}/sitemap.xml`)).text();
 const zhXml = await (await fetch(`${BASE}/zh/sitemap.xml`)).text();
-const urls = [...(sitemapXml + zhXml).matchAll(/<loc>(.*?)<\/loc>/g)].map((m) => new URL(m[1]).pathname);
+// <loc> values are XML-escaped; decode before requesting (same as check-parity).
+const urls = [...(sitemapXml + zhXml).matchAll(/<loc>(.*?)<\/loc>/g)]
+  .map((m) => new URL(m[1].replace(/&amp;/g, '&').replace(/&#39;/g, "'")).pathname);
 // Deterministic spread: take every Nth URL so all sections get sampled.
 const step = Math.max(1, Math.floor(urls.length / SAMPLE));
 const sample = urls.filter((_, i) => i % step === 0).slice(0, SAMPLE);
