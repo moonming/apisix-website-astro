@@ -10,7 +10,7 @@ const href = (h: string) => (h.startsWith('http') ? h : `${prefix}${h}`);
 const switchUrl = locale === 'zh' ? path : `/zh${path}`;
 ---
 <div class="announcement">
-  🤔 Introducing APISIX AI Gateway – Built for LLMs and AI workloads. <a href={`${prefix}/ai-gateway/`}>Learn More</a>
+  🤔 Introducing APISIX AI Gateway<span class="ann-detail"> – Built for LLMs and AI workloads</span>. <a href={`${prefix}/ai-gateway/`}>Learn More</a>
 </div>
 <header class="site-header">
   <div class="container">
