@@ -4,7 +4,7 @@ export const SITE_NAME = 'Apache APISIX';
 export const DEFAULT_DESCRIPTION = 'APISIX is a dynamic, high-performance API Gateway with features like load balancing, canary release, authentication, and observability. As an AI Gateway, it enables AI proxying, LLM load balancing, retries, fallbacks, token-based rate limiting, and security to enhance AI agent efficiency and reliability.';
 // Served from public/img/logo2.svg in production (same URL as today);
 // hotlinked from the live site during prototyping.
-export const LOGO = 'https://apisix.apache.org/img/logo2.svg';
+export const LOGO = '/img/logo2.svg';
 export const FAVICON = 'https://static.apiseven.com/202202/favicon.png';
 // Social-share card image (og:image / twitter:image) — matches production.
 export const SOCIAL_IMAGE = 'https://static.apiseven.com/202202/apache-apisix.png';

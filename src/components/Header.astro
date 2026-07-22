@@ -9,10 +9,14 @@ const label = (item: { label: string; labelZh?: string }) =>
 const href = (h: string) => (h.startsWith('http') ? h : `${prefix}${h}`);
 const switchUrl = locale === 'zh' ? path : `/zh${path}`;
 ---
+<div class="announcement">
+  🤔 Introducing APISIX AI Gateway – Built for LLMs and AI workloads. <a href={`${prefix}/ai-gateway/`}>Learn More</a>
+</div>
 <header class="site-header">
   <div class="container">
     <a class="brand" href={`${prefix}/`}>
-      <img src={LOGO} alt="Apache APISIX logo" width="120" height="30" />
+      <img src={LOGO} alt="" width="36" height="30" />
+      <span>Apache APISIX®</span>
     </a>
     <nav class="main-nav" aria-label="Main navigation">
       {NAV.map((item) => item.items ? (

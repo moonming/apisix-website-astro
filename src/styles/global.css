@@ -38,6 +38,8 @@ a:hover { text-decoration: underline; }
 .container { max-width: var(--max-width); margin: 0 auto; padding: 0 1.25rem; }
 
 /* ---------- header ---------- */
+.announcement { background: var(--color-primary); color: #fff; text-align: center; font-size: .9rem; padding: .5rem 1rem; }
+.announcement a { color: #fff; text-decoration: underline; font-weight: 600; }
 .site-header {
   position: sticky; top: 0; z-index: 100;
   background: var(--color-surface);
