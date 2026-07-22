@@ -2,8 +2,6 @@
 /** Full port of the production homepage: same sections, same copy, zero JS. */
 import Base from '../layouts/Base.astro';
 import { t, localePrefix, SOCIAL_IMAGE, type Locale } from '../lib/site';
-import tickSvg from '../assets/svg/tick.svg?raw';
-import crossSvg from '../assets/svg/cross.svg?raw';
 
 interface Props { locale: Locale }
 const { locale } = Astro.props;
@@ -53,7 +51,7 @@ const INTEGRATIONS: { name: string; img: string | null; href: string }[] = [
   { name: 'Redis', img: '/img/integrations/redis.svg', href: '/docs/apisix/plugins/limit-count/' },
   { name: 'OpenID Connect', img: '/img/integrations/icon-openid-connect.svg', href: '/docs/apisix/plugins/openid-connect/' },
   { name: 'Keycloak', img: '/img/integrations/icon-authz-keycloak.svg', href: '/docs/apisix/plugins/authz-keycloak/' },
-  { name: 'Casbin', img: null, href: '/docs/apisix/plugins/authz-casbin/' },
+  { name: 'Casbin', img: '/img/integrations/casbin.png', href: '/docs/apisix/plugins/authz-casbin/' },
   { name: 'HashiCorp Vault', img: '/img/integrations/vault.svg', href: '/docs/apisix/terminology/secret/' },
   { name: 'OpenAI', img: null, href: '/docs/apisix/plugins/ai-proxy/' },
   { name: 'Anthropic', img: null, href: '/docs/apisix/plugins/ai-proxy/' },
@@ -110,14 +108,6 @@ const PILLAR_IMGS = [
   { src: '/img/infographs/multiplatform.svg', w: 543, h: 244 },
 ];
 
-const CMP_ROWS: [string, string, string][] = [
-  [t(locale, 'Single-core throughput', '单核吞吐量'), '18,000 QPS', '~1,700 QPS'],
-  [t(locale, 'Added latency', '额外延迟'), '0.2 ms', '~2 ms'],
-  [t(locale, 'AI gateway / LLM proxy', 'AI 网关 / LLM 代理'), '✓', '✗'],
-  [t(locale, 'Fully open-source, no paywalled features', '完全开源，无付费墙功能'), '✓', '✗'],
-  [t(locale, 'Dynamic, real-time configuration', '动态实时配置'), '✓', '✗'],
-  [t(locale, 'Hot plugin reload, no restart', '插件热加载，无需重启'), '✓', '✗'],
-];
 ---
 <Base
   title={t(locale, 'Apache APISIX - Open Source API Gateway & AI Gateway', 'Apache APISIX - 开源 API 网关与 AI 网关')}
@@ -142,23 +132,23 @@ const CMP_ROWS: [string, string, string][] = [
         <a class="btn" href={`${p}/docs/apisix/getting-started/README/`}>{t(locale, 'Get started', '快速开始')}</a>
         <a class="btn ghost" href={`${p}/plugins/`}>{t(locale, 'Browse 100+ plugins', '浏览 100+ 插件')}</a>
       </div>
-      <div class="stat-row">
-        {STATS.map(([v, l]) => <div class="stat"><strong>{v}</strong><span>{l}</span></div>)}
-      </div>
+      <ul class="stat-row">
+        {STATS.map(([v, l]) => <li class="stat"><strong>{v}</strong><span>{l}</span></li>)}
+      </ul>
     </div>
   </section>
 
-  <section class="section">
-    <div class="container grid-3">
+  <section class="section" aria-label={t(locale, 'Get started with Apache APISIX', '快速开始')}>
+    <div class="container grid-3 pathways">
       {QUICK_CARDS.map((c) => (
         <a class="card" href={c.href}><h3>{c.title}</h3><p>{c.body}</p><p class="card-link">{c.link}</p></a>
       ))}
     </div>
   </section>
 
-  <section class="section alt">
+  <section class="section alt ai-gateway">
     <div class="container">
-      <p class="kicker">AI Gateway</p>
+      <p class="badge">AI Gateway</p>
       <h2>{t(locale, 'The same gateway, now for your LLM traffic', '同一个网关，现在服务你的 LLM 流量')}</h2>
       <p class="sub">{t(locale,
         'Proxy, secure, and govern traffic to 20+ LLM providers — with the performance, plugins, and observability you already run for your APIs.',
@@ -171,7 +161,7 @@ const CMP_ROWS: [string, string, string][] = [
       <div class="grid-3">
         {AI_CARDS.map(([h, b, href]) => <a class="card" href={`${p}${href}`}><h3>{h}</h3><p>{b}</p></a>)}
       </div>
-      <p style="margin-top:1.5rem"><a href={`${p}/ai-gateway/`}>{t(locale, 'Explore the AI Gateway →', '了解 AI 网关 →')}</a></p>
+      <p style="margin-top:2rem"><a class="cta-link" href={`${p}/ai-gateway/`}>{t(locale, 'Explore the AI Gateway →', '了解 AI 网关 →')}</a></p>
     </div>
   </section>
 
@@ -182,9 +172,12 @@ const CMP_ROWS: [string, string, string][] = [
       <p class="sub">{t(locale,
         'Requests flow through a hot-reloadable plugin pipeline; etcd distributes configuration across the cluster in real time, with no restarts.',
         '请求流经可热加载的插件流水线；etcd 将配置实时分发到整个集群，无需重启。')}</p>
-      <div class="arch-visual reveal">
+      <figure class="arch-visual reveal">
         <img src="/img/architecture.svg" alt={t(locale, 'Apache APISIX architecture diagram', 'Apache APISIX 架构图')} loading="lazy" width="1713" height="996" />
-      </div>
+        <figcaption>{t(locale,
+          'Apache APISIX is based on NGINX and etcd. Compared with traditional API Gateways, APISIX has features like dynamic routing and hot-loading plugins, etc.',
+          'Apache APISIX 基于 NGINX 与 etcd，相较于传统的 API 网关，它提供了动态路由、插件热加载等诸多能力。')}</figcaption>
+      </figure>
     </div>
   </section>
 
@@ -194,20 +187,19 @@ const CMP_ROWS: [string, string, string][] = [
       <p class="sub">{t(locale,
         'Apache APISIX provides open source API Gateway to help you manage microservices, delivering the ultimate performance, security, and scalable platform for all your APIs and microservices.',
         'Apache APISIX 作为云原生架构的开源 API 网关，可以为海量 API 和微服务提供安全可靠的动态、高性能、可扩展的管理平台。')}</p>
-      <p class="sub">{t(locale,
-        'Apache APISIX is based on NGINX and etcd. Compared with traditional API Gateways, APISIX has features like dynamic routing and hot-loading plugins, etc.',
-        'Apache APISIX 基于 NGINX 与 etcd，相较于传统的 API 网关，它提供了动态路由、插件热加载等诸多能力。')}</p>
-      <h2 style="margin-top:2.5rem">{t(locale, 'Why APISIX API Gateway?', '为什么选择 APISIX API 网关？')}</h2>
-      <p class="sub"><strong>{t(locale,
-        'Reduce time fighting bugs, focus on designing world-class systems with API Gateway',
-        'Apache APISIX 值得信赖，你只需专注在具体业务中，而无需考虑 API 处理基础组件。')}</strong></p>
-      <p class="sub">{t(locale,
-        'APISIX API Gateway offers nearly 100 open-source plugins, comprehensive API management capabilities, and advanced technical advantages.',
-        'APISIX API 网关提供近百个开源插件、全面的 API 管理能力和先进的技术优势。')}</p>
+      <div class="why-block">
+        <p class="badge solid">{t(locale, 'Why APISIX API Gateway?', '为什么选择 APISIX API 网关？')}</p>
+        <h3 class="feature-headline">{t(locale,
+          'Reduce time fighting bugs, focus on designing world-class systems with API Gateway',
+          'Apache APISIX 值得信赖，你只需专注在具体业务中，而无需考虑 API 处理基础组件。')}</h3>
+        <p class="feature-lead">{t(locale,
+          'APISIX API Gateway offers nearly 100 open-source plugins, comprehensive API management capabilities, and advanced technical advantages.',
+          'APISIX API 网关提供近百个开源插件、全面的 API 管理能力和先进的技术优势。')}</p>
+      </div>
     </div>
   </section>
 
-  <section class="section alt">
+  <section class="section alt integrations">
     <div class="container">
       <h2>{t(locale, 'Integrates with your stack', '与你的技术栈无缝集成')}</h2>
       <p class="sub">{t(locale,
@@ -219,12 +211,12 @@ const CMP_ROWS: [string, string, string][] = [
           <span>{it.name}</span>
         </a>
       ))}</div>
-      <p style="margin-top:1.25rem"><a href={`${p}/plugins/`}>{t(locale, 'Explore all 100+ plugins →', '浏览全部 100+ 插件 →')}</a></p>
+      <p style="margin-top:2rem"><a class="cta-link" href={`${p}/plugins/`}>{t(locale, 'Explore all 100+ plugins →', '浏览全部 100+ 插件 →')}</a></p>
     </div>
   </section>
 
   {PILLARS.map((s, i) => (
-    <section class={`section pillar-section${i % 2 ? ' alt' : ''}`}>
+    <section class="section pillar-section">
       <div class={`container pillar${i % 2 ? ' flip' : ''}`}>
         <div class="pillar-text">
           <p class="kicker">{s.kicker}</p>
@@ -238,31 +230,10 @@ const CMP_ROWS: [string, string, string][] = [
     </section>
   ))}
 
-  <section class="section alt">
-    <div class="container">
-      <h2>{t(locale, 'Among the best, and always improving', '同类最佳，且持续进步')}</h2>
-      <p class="sub">{t(locale,
-        'Apache APISIX is an open-source API gateway and AI gateway — here is how it compares on performance and core capabilities.',
-        'Apache APISIX 是开源的 API 网关与 AI 网关——以下是它在性能与核心能力上的对比。')}</p>
-      <div class="prose"><table class="cmp-table">
-        <thead><tr><th>{t(locale, 'Feature', '特性')}</th><th>Apache APISIX</th><th>{t(locale, 'Other gateways', '其他网关')}</th></tr></thead>
-        <tbody>
-          {CMP_ROWS.map(([f, a, b]) => (
-            <tr>
-              <td>{f}</td>
-              <td class="good">{a === '✓' ? <span class="cmp-icon tick" role="img" aria-label={t(locale, 'Supported', '支持')} set:html={tickSvg} /> : a}</td>
-              <td class="bad">{b === '✗' ? <span class="cmp-icon cross" role="img" aria-label={t(locale, 'Not supported', '不支持')} set:html={crossSvg} /> : b}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table></div>
-    </div>
-  </section>
-
   <section class="section alt endcta">
     <div class="container" style="text-align:center">
       <div class="rocket" aria-hidden="true">🚀</div>
-      <h2>{t(locale, 'Try Apache APISIX today.', '即刻体验 Apache APISIX。')}</h2>
+      <h2>{t(locale, 'Try ', '即刻体验 ')}<span class="brand-mark">Apache APISIX</span>{t(locale, ' today.', '。')}</h2>
       <p style="margin-top:1.25rem"><a class="btn" href={`${p}/docs/apisix/getting-started/README/`}>{t(locale, 'Getting Started', '快速开始')}</a></p>
     </div>
   </section>
