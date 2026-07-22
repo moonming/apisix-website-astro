@@ -83,7 +83,7 @@ a:hover { text-decoration: underline; }
 
 /* ---------- footer ---------- */
 .site-footer { margin-top: 4rem; background: #14161a; color: #c8ccd2; padding: 3rem 0 2rem; font-size: .9rem; }
-.site-footer h4 { color: #fff; margin: 0 0 .6rem; font-size: .95rem; }
+.site-footer .footer-title { color: #fff; margin: 0 0 .6rem; font-size: .95rem; font-weight: 700; }
 .site-footer a { color: #c8ccd2; }
 .site-footer a:hover { color: #fff; }
 .footer-cols { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; }
@@ -207,7 +207,8 @@ a.tag:hover { border-color: var(--color-primary); color: var(--color-primary); t
 .hero .stat-row { justify-content: center; margin-top: 2.25rem; padding-top: 1.5rem; border-top: 1px solid var(--color-border); max-width: 640px; }
 .stat strong { display: block; font-size: 1.5rem; font-weight: 700; line-height: 1.1; color: var(--color-primary); letter-spacing: -.01em; font-variant-numeric: tabular-nums; }
 .stat span { color: var(--color-text-soft); font-size: .82rem; }
-.kicker { text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; font-weight: 700; color: var(--color-primary); margin: 0 0 .4rem; }
+/* small red text uses the darker brand shade for WCAG AA (7.9:1 on white) */
+.kicker { text-transform: uppercase; letter-spacing: .08em; font-size: .78rem; font-weight: 700; color: var(--color-primary-dark); margin: 0 0 .4rem; }
 .chip-row { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; margin: 1.25rem 0; }
 .chip { border: 1px solid var(--color-border); background: var(--color-surface); border-radius: 99px; padding: .25rem .8rem; font-size: .85rem; color: var(--color-text-soft); }
 .chip.strong { background: var(--color-primary); border-color: var(--color-primary); color: #fff; font-weight: 600; }
@@ -216,10 +217,10 @@ a.tag:hover { border-color: var(--color-primary); color: var(--color-primary); t
 .chip.logo { display: inline-flex; align-items: center; gap: .6rem; border-radius: var(--radius-card); padding: .65rem 1.1rem; font-size: .95rem; min-height: 3rem; text-decoration: none; transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease); }
 .chip.logo img { width: 30px; height: 30px; object-fit: contain; flex: none; }
 .chip.logo span { font-weight: 500; color: #2c2c2a; }
-.chip.logo:hover { border-color: var(--color-hover-border); color: var(--color-text); transform: translateY(-3px); box-shadow: 0 6px 18px rgb(232 67 62 / 8%); }
+.chip.logo:hover { border-color: var(--color-hover-border); transform: translateY(-3px); box-shadow: 0 6px 18px rgb(232 67 62 / 8%); }
 .chip.logo:focus-visible { outline: 2px solid var(--color-primary); outline-offset: 2px; }
-.card p.card-link { color: var(--color-primary); font-weight: 600; font-size: .95rem; margin-top: auto; }
-section.endcta.alt { background: transparent; padding: 4rem 0 0; }
+.card p.card-link { color: var(--color-primary-dark); font-weight: 600; font-size: .95rem; margin-top: auto; }
+section.endcta.alt { background: transparent; padding: 4rem 1rem 0; }
 .endcta .container { max-width: 1040px; padding: clamp(3.5rem, 12vh, 7rem) 2rem; background: #f8f8f8; border-radius: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,.04), 0 28px 56px -28px rgba(232,67,62,.20); }
 .endcta h2 { font-size: clamp(2.4rem, 5.5vw, 4.5rem); font-weight: 800; line-height: 1.08; letter-spacing: -.02em; margin: 0; }
 .endcta h2 .brand-mark { color: var(--color-primary); }
@@ -247,12 +248,13 @@ section.endcta.alt { background: transparent; padding: 4rem 0 0; }
 @media (max-width: 960px) {
   .pillar { grid-template-columns: 1fr; }
   .pillar.flip .pillar-text { order: 0; }
+  .pillar-visual { min-height: 200px; }
 }
 /* ---------- shared components: badge, cta-link, focal-section scopes ---------- */
 .badge { display: inline-block; background: var(--color-badge-bg); color: var(--color-badge-text); font-size: .82rem; font-weight: 600; letter-spacing: .04em; padding: .3rem .9rem; border-radius: 99px; margin: 0 0 1rem; }
-.badge.solid { background: var(--color-primary); color: #fff; font-weight: 700; }
-.cta-link { display: inline-block; font-weight: 600; color: var(--color-primary); }
-.cta-link:hover { color: var(--color-primary-dark); text-decoration: none; }
+.badge.solid { background: var(--color-primary-dark); color: #fff; font-weight: 700; }
+.cta-link { display: inline-block; font-weight: 600; color: var(--color-primary-dark); }
+.cta-link:hover { color: var(--color-primary-dark); text-decoration: underline; }
 .pathways .card { border-top: 3px solid var(--color-primary); }
 .ai-gateway.alt { background: var(--color-surface-warm); }
 .ai-gateway .container { max-width: 1000px; text-align: center; }
@@ -261,6 +263,7 @@ section.endcta.alt { background: transparent; padding: 4rem 0 0; }
 .ai-gateway .chip-row { justify-content: center; }
 .ai-gateway .chip-row .arrow { color: var(--color-primary); font-weight: 700; }
 .ai-gateway .chip.flow { border-radius: 8px; padding: .5rem .9rem; font-size: .9rem; font-weight: 500; color: #2c2c2a; }
+.ai-gateway .chip.flow.strong { color: #fff; font-weight: 600; }
 .integrations .container { text-align: center; }
 .integrations .sub { max-width: 620px; margin: 0 auto 2.25rem; }
 .why-block { margin-top: 3.5rem; padding-top: 3rem; border-top: 1px solid var(--color-border); }
@@ -284,5 +287,6 @@ section.endcta.alt { background: transparent; padding: 4rem 0 0; }
 .archive-list h2 { font-size: 1.3rem; margin: 1.6rem 0 .6rem; }
 .archive-list ul { margin: 0; padding-left: 1.25rem; }
 .archive-list li { margin: .3rem 0; }
+.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 .anchor-link { opacity: 0; margin-left: .35rem; font-size: .8em; }
 h2:hover .anchor-link, h3:hover .anchor-link { opacity: 1; }

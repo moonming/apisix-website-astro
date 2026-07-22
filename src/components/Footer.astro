@@ -10,7 +10,7 @@ const href = (h: string) => (h.startsWith('http') ? h : `${prefix}${h}`);
     <div class="footer-cols">
       {FOOTER.cols.map((col) => (
         <div>
-          <h4>{col.title}</h4>
+          <p class="footer-title">{col.title}</p>
           <ul>
             {col.links.map((l) => <li><a href={href(l.href)}>{l.label}</a></li>)}
           </ul>
