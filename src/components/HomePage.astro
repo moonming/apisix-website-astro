@@ -23,13 +23,14 @@ const QUICK_CARDS = [
 ];
 
 const AI_PROVIDERS = ['OpenAI', 'Anthropic', 'AWS Bedrock', 'DeepSeek', 'Ollama', '+ more'];
-const AI_CARDS = [
-  ['Multi-LLM proxy', 'Route to OpenAI, Anthropic, AWS Bedrock, DeepSeek, Ollama and 20+ providers through one endpoint.'],
-  ['LLM load balancing', 'Distribute traffic across providers and models for throughput and resilience.'],
-  ['Retry & fallback', 'Fail over to a backup model or provider automatically when one is unavailable.'],
-  ['Token rate limiting', 'Cap usage and cost with token-based rate limits per consumer.'],
-  ['Prompt security', 'Guardrails, content moderation, and prompt decoration before requests reach the model.'],
-  ['MCP support', 'Expose and govern Model Context Protocol tools through the gateway.'],
+// title, description, doc link. Mirrors website/src/.../AIGatewaySection.tsx.
+const AI_CARDS: [string, string, string][] = [
+  ['Multi-LLM proxy', 'Route to OpenAI, Anthropic, AWS Bedrock, DeepSeek, Ollama and 20+ providers through one endpoint.', '/docs/apisix/plugins/ai-proxy/'],
+  ['LLM load balancing', 'Distribute traffic across providers and models for throughput and resilience.', '/docs/apisix/plugins/ai-proxy-multi/'],
+  ['Retry & fallback', 'Fail over to a backup model or provider automatically when one is unavailable.', '/docs/apisix/plugins/ai-proxy-multi/'],
+  ['Token rate limiting', 'Cap usage and cost with token-based rate limits per consumer.', '/docs/apisix/plugins/ai-rate-limiting/'],
+  ['Prompt security', 'Guardrails, content moderation, and prompt decoration before requests reach the model.', '/docs/apisix/plugins/ai-prompt-guard/'],
+  ['MCP support', 'Expose and govern Model Context Protocol tools through the gateway.', '/ai-gateway/'],
 ];
 
 // name, brand icon/logo under /img/integrations/ (null = text-only chip), and
@@ -168,7 +169,7 @@ const CMP_ROWS: [string, string, string][] = [
         {AI_PROVIDERS.map((n) => <span class="chip">{n}</span>)}
       </p>
       <div class="grid-3">
-        {AI_CARDS.map(([h, b]) => <div class="card"><h3>{h}</h3><p>{b}</p></div>)}
+        {AI_CARDS.map(([h, b, href]) => <a class="card" href={`${p}${href}`}><h3>{h}</h3><p>{b}</p></a>)}
       </div>
       <p style="margin-top:1.5rem"><a href={`${p}/ai-gateway/`}>{t(locale, 'Explore the AI Gateway →', '了解 AI 网关 →')}</a></p>
     </div>
