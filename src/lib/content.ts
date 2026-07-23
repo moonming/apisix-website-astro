@@ -95,7 +95,9 @@ function blogPost(path: string, mod: MdModule, locale: Locale): Post | null {
   //  - frontmatter slug containing "/" replaces the whole path;
   //  - otherwise the filename is used AS-IS (case and spaces preserved —
   //    see /blog/2023/09/08/APISIX-integrates-with-Coraza/).
-  const slug = fmSlug ?? name;
+  // A leading "/" in the slug would double up in the URL (Docusaurus
+  // normalizeUrl collapses it; see the 2021-06-03 firsthand-experience post).
+  const slug = (fmSlug ?? name).replace(/^\/+/, '');
   const urlPath = slug.includes('/') ? slug : `${y}/${mo}/${d}/${slug}`;
   return {
     url: `${localePrefix(locale)}/blog/${urlPath}/`,
