@@ -27,7 +27,7 @@ const jsonLd = [{
   mainEntityOfPage: `${SITE}${locale === 'zh' ? '/zh' : ''}${path}`,
 }];
 ---
-<Base title={post.title} description={post.description} locale={locale} path={path} image={post.image} jsonLd={jsonLd}>
+<Base title={post.title} description={post.description} locale={locale} path={path} image={post.image} jsonLd={jsonLd} ogType="article">
   <div class="container article-wrap">
     <article class="prose">
       <h1>{post.title}</h1>
