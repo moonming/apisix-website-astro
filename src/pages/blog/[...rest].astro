@@ -10,4 +10,4 @@ export function getStaticPaths() {
 }
 const { post } = Astro.props;
 ---
-<Article post={post} locale="en" path={post.url} schemaType="BlogPosting" />
+<Article post={post} locale="en" path={post.url} tagBase="/blog" schemaType="BlogPosting" />

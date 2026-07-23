@@ -11,4 +11,4 @@ export function getStaticPaths() {
 const { post } = Astro.props;
 const path = post.url.replace(/^\/zh/, '');
 ---
-<Article post={post} locale="zh" path={path} schemaType="BlogPosting" />
+<Article post={post} locale="zh" path={path} tagBase="/zh/blog" schemaType="BlogPosting" />
