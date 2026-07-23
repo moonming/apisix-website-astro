@@ -8,8 +8,9 @@ interface Props {
   path: string;
   posts?: Post[];
   heading?: string;
+  kicker?: string;
 }
-const { locale, path, heading } = Astro.props;
+const { locale, path, heading, kicker } = Astro.props;
 const posts = Astro.props.posts ?? getBlogPosts(locale);
 const byYear = new Map<number, Post[]>();
 for (const post of posts) {
@@ -20,15 +21,25 @@ for (const post of posts) {
 const years = [...byYear.keys()].sort((a, b) => b - a);
 ---
 <Base title={heading ?? t(locale, 'Archive', '归档')} locale={locale} path={path}>
+  <header class="page-head">
+    <div class="container">
+      <div class="page-title">
+        {kicker && <p class="kicker">{kicker}</p>}
+        <h1>{heading ?? t(locale, 'Archive', '归档')}</h1>
+        <nav class="tag-row year-nav" aria-label={t(locale, 'Jump to year', '按年份跳转')}>
+          {years.map((y) => <a class="tag" href={`#y${y}`}>{y} <span class="count">{byYear.get(y)!.length}</span></a>)}
+        </nav>
+      </div>
+    </div>
+  </header>
   <div class="container">
-    <div class="page-title"><h1>{heading ?? t(locale, 'Archive', '归档')}</h1></div>
     <div class="archive-list">
       {years.map((y) => (
         <section>
-          <h2>{y}</h2>
+          <h2 id={`y${y}`}>{y} <span class="year-count">· {byYear.get(y)!.length} {t(locale, 'posts', '篇')}</span></h2>
           <ul>
             {byYear.get(y)!.map((post) => (
-              <li><a href={post.url}>{post.title}</a> <small>({post.dateStr})</small></li>
+              <li><a href={post.url}><span>{post.title}</span> {post.dateStr && <time datetime={post.dateStr}>{post.dateStr}</time>}</a></li>
             ))}
           </ul>
         </section>

@@ -11,11 +11,14 @@ const tag = Astro.params.tag;
 ---
 <ListPage
   title={`${label} | 博客`}
-  heading={`标签：${label}`}
+  heading={label}
+  kicker={'标签'}
+  sub={`${posts.length} 篇文章`}
   locale="zh"
   path={`/blog/tags/${tag}/`}
   base={`/zh/blog/tags/${tag}/`}
   posts={posts}
   current={1}
   total={1}
+  tagsUrl={'/zh/blog/tags/'}
 />

@@ -1,6 +1,6 @@
 ---
 import Base from '../../layouts/Base.astro';
-import { getLearningPosts } from '../../lib/content';
+import { getLearningPosts, tagSlug } from '../../lib/content';
 import { SITE } from '../../lib/site';
 
 export function getStaticPaths() {
@@ -37,20 +37,30 @@ if (Array.isArray(faq) && faq.length) {
 <Base title={post.title} description={post.description} locale="en" path={path} jsonLd={jsonLd}>
   <div class="container article-wrap">
     <article class="prose">
-      <h1>{post.title}</h1>
-      <p class="article-meta">{post.dateStr}</p>
+      <header class="article-header">
+        <h1>{post.title}</h1>
+        {post.dateStr && <p class="article-meta"><time datetime={post.dateStr}>{post.dateStr}</time></p>}
+        {post.tags.length > 0 && (
+          <div class="tag-row">
+            {post.tags.map((tag) => <a class="tag" href={`/learning-center/tags/${tagSlug(tag)}/`}>{tag}</a>)}
+          </div>
+        )}
+      </header>
       <Content />
       {Array.isArray(faq) && faq.length > 0 && (
-        <section>
+        <section class="faq">
           <h2>Frequently asked questions</h2>
           {faq.map((f: any) => (
             <details>
-              <summary style="font-weight:600;cursor:pointer;margin:.5rem 0">{f.q}</summary>
+              <summary>{f.q}</summary>
               <p>{f.a}</p>
             </details>
           ))}
         </section>
       )}
+      <footer class="article-footer">
+        <a class="cta-link" href="/learning-center/">← All articles</a>
+      </footer>
     </article>
   </div>
 </Base>

@@ -30,16 +30,24 @@ const jsonLd = [{
 <Base title={post.title} description={post.description} locale={locale} path={path} image={post.image} jsonLd={jsonLd} ogType="article">
   <div class="container article-wrap">
     <article class="prose">
-      <h1>{post.title}</h1>
-      <p class="article-meta">
-        {post.dateStr}{post.author ? ` · ${post.author}` : ''}
+      <header class="article-header">
+        <h1>{post.title}</h1>
+        <p class="article-meta">
+          {post.dateStr && <time datetime={post.dateStr}>{post.dateStr}</time>}{post.author ? ` · ${post.author}` : ''}
+        </p>
         {tagBase && post.tags.length > 0 && (
-          <span class="tag-row" style="display:inline-flex;margin-left:.75rem;vertical-align:middle">
+          <div class="tag-row">
             {post.tags.map((tag) => <a class="tag" href={`${tagBase}/tags/${tagSlug(tag)}/`}>{tag}</a>)}
-          </span>
+          </div>
         )}
-      </p>
+      </header>
       <Content />
+      <footer class="article-footer">
+        {/* tagBase already carries the locale prefix (e.g. /zh/blog). */}
+        <a class="cta-link" href={`${tagBase ?? (locale === 'zh' ? '/zh/blog' : '/blog')}/`}>
+          ← {locale === 'zh' ? '所有文章' : 'All posts'}
+        </a>
+      </footer>
     </article>
   </div>
 </Base>

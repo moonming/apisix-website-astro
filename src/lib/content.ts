@@ -122,7 +122,8 @@ function flatPost(path: string, mod: MdModule, urlBase: string, locale: Locale):
     title: mod.frontmatter.title ?? slug,
     description: mod.frontmatter.description ?? excerpt(mod),
     date,
-    dateStr: date.toISOString().slice(0, 10),
+    // Undated posts sort last (epoch) but must not DISPLAY "1970-01-01".
+    dateStr: mod.frontmatter.date ? date.toISOString().slice(0, 10) : '',
     tags: toTags(mod.frontmatter),
     image: mod.frontmatter.image,
     author: mod.frontmatter.author,

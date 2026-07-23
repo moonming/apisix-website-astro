@@ -11,11 +11,14 @@ const tag = Astro.params.tag;
 ---
 <ListPage
   title={`${label} | Blog`}
-  heading={`Tag: ${label}`}
+  heading={label}
+  kicker={'Tag'}
+  sub={`${posts.length} ${posts.length === 1 ? 'post' : 'posts'} tagged “${label}”`}
   locale="en"
   path={`/blog/tags/${tag}/`}
   base={`/blog/tags/${tag}/`}
   posts={posts}
   current={1}
   total={1}
+  tagsUrl={'/blog/tags/'}
 />
